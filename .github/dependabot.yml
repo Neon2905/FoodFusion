@@ -1,0 +1,55 @@
+version: 2
+updates:
+  # PHP dependencies managed by Composer
+  - package-ecosystem: "composer"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "composer"]
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      laravel-minor:
+        patterns:
+          - "laravel/*"
+        update-types: ["minor", "patch"]
+
+  # JavaScript dependencies managed by npm (Vite/Tailwind, etc.)
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:15"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "npm"]
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      frontend-minor:
+        patterns:
+          - "*"
+        update-types: ["minor", "patch"]
+
+  # GitHub Actions workflow updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:30"
+      timezone: "UTC"
+    labels: ["dependencies", "github-actions"]
+    commit-message:
+      prefix: "chore"
+      include: "scope"
