@@ -2,9 +2,9 @@
 
 # Security Policy
 
-FoodFusion is a content + social platform for recipes, video shows, chefs, and community. See platform overview in SYSTEM_DESIGN.md:
+FoodFusion is a content + social platform for recipes, video shows, chefs, and community. See platform overview in ARCHITECTURE.md:
 
-- Security and privacy notes: [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md)
+- Security and privacy notes: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## Supported Versions
 
