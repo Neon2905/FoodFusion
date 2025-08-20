@@ -1,4 +1,4 @@
-@props(['title' => 'Document'])
+@props(['title' => 'Food Fusion'])
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +11,10 @@
     @vite('resources/css/app.css')
 </head>
 
-<body>
+<body class="bg-background">
     <x-navbar />
     {{ $slot }}
+    <x-auth.login-modal />
 </body>
 
 </html>
