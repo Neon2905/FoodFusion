@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    @if (true)
+    @if (auth()->check())
         <div
             class="bg-navbar-gray flex-center h-[56px] py-[8px] rounded-full border border-[rgba(191,191,191,0.5)] filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] px-[12px]">
             <div class="flex-center flex-row h-full gap-2">
@@ -30,8 +30,10 @@
         </div>
     @else
         <div class="h-[60px] py-[4px] flex-center gap-[16px]">
-            <x-button-rounded label="Log In" class="w-[132px] border-[1px] bg-white border-primary" />
-            <x-button-rounded label="Join Us" class="w-[132px] bg-accent" />
+            <x-button-rounded label="Log In" class="w-[132px] border-[1px] bg-white border-primary"
+                onclick="window.location.href='{{ request()->fullUrlWithQuery(['login' => 1]) }}'" />
+            <x-button-rounded label="Join Us" class="w-[132px] bg-accent"
+                onclick="window.location.href='{{ request()->fullUrlWithQuery(['register' => 1]) }}'" />
         </div>
     @endif
 </nav>

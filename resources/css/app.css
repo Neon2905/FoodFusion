@@ -28,6 +28,8 @@
     --color-secondary: rgba(205, 101, 101, 1);
     --color-accent: rgba(110, 204, 97, 1);
 
+    --color-muted: rgba(107, 114, 128, 1);
+
     --color-navbar-gray: rgba(217, 217, 217, 0.5);
 }
 
@@ -38,8 +40,26 @@
 }
 
 @layer components {
+    a {
+        @apply hover:underline;
+    }
+
     .modal {
-        @apply fixed inset-0 z-50 bg-white/10 backdrop-filter backdrop-blur-[1.5px] border border-white/20 saturate-[150%] contrast-[80%];
+        @apply fixed w-full h-full inset-0 z-50 bg-white/10 backdrop-filter backdrop-blur-[1.5px] border border-white/20 saturate-[150%] contrast-[80%];
+    }
+    .modal-card {
+        @apply flex flex-col gap-[10px] bg-background p-[20px] rounded-2xl drop-shadow-[0px_4px_4px_rgba(0,0,0,0.25)];
+    }
+
+    .button {
+        @apply flex items-center justify-center rounded-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)] cursor-pointer text-body-lg font-bold transform origin-center transition-all duration-100 ease-in-out hover:scale-101 hover:shadow-lg;
+    }
+    .input-box {
+        @apply border border-gray-400 rounded-lg p-[10px] focus:outline-none focus:ring-2 focus:ring-primary ;
+    }
+    .checkbox {
+        /* TODO: Review this later */
+        @apply w-4 h-4 text-blue-600 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600;
     }
 }
 

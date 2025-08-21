@@ -15,6 +15,7 @@
     <x-navbar />
     {{ $slot }}
     <x-auth.login-modal />
+    <x-auth.register-modal />
 </body>
 
 </html>

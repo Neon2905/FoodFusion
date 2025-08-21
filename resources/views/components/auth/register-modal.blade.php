@@ -1,4 +1,4 @@
-@if (request()->has('login'))
+@if (request()->has('register'))
     <div class="modal flex-center">
         <div class="modal-card bg-background p-[20px] w-[380px]">
             <div class="flex justify-end">
@@ -9,7 +9,7 @@
             </div>
             <div class="flex flex-col gap-[20px]">
                 <div class="flex-center w-full text-heading-lg font-semibold">
-                    Log In
+                    Creat an Account
                 </div>
                 <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-[20px] px-[20px]">
                     @csrf
@@ -19,19 +19,32 @@
                         </label>
                         <input type="email" name="email" id="email" required class="input-box">
                     </div>
+
                     <div class="flex flex-col gap-2">
                         <label for="password" class="text-body-lg font-bold">
                             Password
                         </label>
                         <input type="password" name="password" id="password" required class="input-box">
                     </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="password_confirmation" class="text-body-lg font-bold">
+                            Confirm Password
+                        </label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" required
+                            class="input-box">
+                    </div>
+                    <div class="flex flex-row items-start gap-[10px]">
+                        <input id="agree" type="checkbox" class="checkbox">
+                        <label for="agree" class="text-subtitle-md font-medium text-muted">
+                            By creating an account, I agree to the
+                            <a href="#" class="text-secondary">Terms of Use</a> and have read our
+                            <a href="#" class="text-secondary">Privacy Policy</a>.
+                        </label>
+                    </div>
                     <div class="flex-center flex-col px-[10px] gap-[10px]">
-                        <button type="submit" class="button bg-primary w-full h-10">
-                            Log In
+                        <button type="submit" class="button bg-accent w-full h-10">
+                            Create Account
                         </button>
-                        <a href="" class="text-secondary text-body-md font-bold">
-                            Forgot password?
-                        </a>
                     </div>
                 </form>
                 <div class="flex-center flex-col gap-[5px]">
@@ -52,10 +65,10 @@
                         </x-nav-item>
                     </div>
                 </div>
-                <p class="flex-center text-subtitle-md font-medium gap-1">
-                    Don't have an account yet?
-                    <a href="{{ url()->current() }}?register=1" class="text-primary">Register</a>
-                </p>
+                <div class="flex-center text-subtitle-md font-medium gap-1">
+                    Already a member?
+                    <a href="{{ url()->current() }}?login=1" class="text-primary">Log In</a>
+                </div>
             </div>
         </div>
 @endif
