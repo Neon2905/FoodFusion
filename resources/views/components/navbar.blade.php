@@ -30,10 +30,14 @@
         </div>
     @else
         <div class="h-[60px] py-[4px] flex-center gap-[16px]">
-            <x-button-rounded label="Log In" class="w-[132px] border-[1px] bg-white border-primary"
-                onclick="window.location.href='{{ request()->fullUrlWithQuery(['login' => 1]) }}'" />
-            <x-button-rounded label="Join Us" class="w-[132px] bg-accent"
-                onclick="window.location.href='{{ request()->fullUrlWithQuery(['register' => 1]) }}'" />
+            <button class="nav-button w-[100px] border-[1px] h-[40px] bg-white border-primary"
+                onclick="window.location.href='{{ request()->fullUrlWithQuery(['login' => 1]) }}'">
+                Log In
+            </button>
+            <button class="nav-button w-[100px] h-[40px] bg-accent"
+                onclick="window.location.href='{{ request()->fullUrlWithQuery(['register' => 1]) }}'">
+                Join Us
+            </button>
         </div>
     @endif
 </nav>
