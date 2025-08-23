@@ -21,6 +21,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'is_verified_creator',
+        'bio',
+        'avatar',
+        'social_links',
+        'dietary_preferences',
+        'measurement_units',
     ];
 
     /**
@@ -43,6 +50,42 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_verified_creator' => 'boolean',
+            'social_links' => 'array',
+            'dietary_preferences' => 'array',
         ];
+    }
+
+    // Relationships
+    public function recipes()
+    {
+        return $this->hasMany(Recipe::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(RecipeReview::class);
+    }
+
+    // Scopes
+    public function scopeCreators($query)
+    {
+        return $query->whereIn('role', ['creator', 'admin']);
+    }
+
+    public function scopeVerifiedCreators($query)
+    {
+        return $query->where('is_verified_creator', true);
+    }
+
+    // Accessors
+    public function getIsCreatorAttribute(): bool
+    {
+        return in_array($this->role, ['creator', 'admin']);
+    }
+
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->role === 'admin';
     }
 }
