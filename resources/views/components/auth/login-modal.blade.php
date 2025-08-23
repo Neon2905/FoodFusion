@@ -17,7 +17,8 @@
                         <label for="email" class="text-body-lg font-bold">
                             Email
                         </label>
-                        <input type="email" name="email" id="email" required class="input-box">
+                        <input type="email" name="email" id="email" required class="input-box"
+                            value="{{ old('email') }}">
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="password" class="text-body-lg font-bold">
@@ -26,6 +27,11 @@
                         <input type="password" name="password" id="password" required class="input-box">
                     </div>
                     <div class="flex-center flex-col px-[10px] gap-[10px]">
+                        @if ($errors->any())
+                            <div class="text-red-600 text-body-sm">
+                                {{ $errors->first('error') }}
+                            </div>
+                        @endif
                         <button type="submit" class="button bg-primary w-full h-10">
                             Log In
                         </button>
@@ -33,6 +39,7 @@
                             Forgot password?
                         </a>
                     </div>
+                </form>
                 </form>
                 <div class="flex-center flex-col gap-[5px]">
                     <div class="text-heading-sm font-bold">
