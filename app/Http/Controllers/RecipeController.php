@@ -11,11 +11,6 @@ use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth')->except(['index', 'show']);
-    }
-
     /**
      * Display a listing of recipes
      */
@@ -171,9 +166,7 @@ class RecipeController extends Controller
             'steps' => function ($query) {
                 $query->orderBy('order');
             },
-            'recipeIngredients.ingredient' => function ($query) {
-                $query->orderBy('recipe_ingredients.order');
-            },
+            'recipeIngredients.ingredient',
             'reviews.user'
         ]);
 

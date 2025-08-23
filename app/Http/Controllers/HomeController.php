@@ -30,10 +30,12 @@ class HomeController extends Controller
 
         $topCreators = User::creators()
             ->withCount('recipes')
-            ->having('recipes_count', '>', 0)
             ->orderBy('recipes_count', 'desc')
-            ->take(6)
-            ->get();
+            ->limit(6)
+            ->get()
+            ->filter(function ($user) {
+                return $user->recipes_count > 0;
+            });
 
         return view('home', compact(
             'featuredRecipes',
