@@ -1,0 +1,29 @@
+Contents of a Recipe
+
+-Media [Videos/Photos]
+-Hero `
+-Title `
+-Description `
+-Author (Actual User) `
+-Reviews `
+-Difficulty `
+-Total_Duration `
+-Prep_Time `
+-Cook_Time `
+-Serving `
+-Cuisine `
+-Nutrition `
+    -calories
+    -fat
+    -carbs
+    -protein
+    -fiber
+-Ingredients `
+-Steps `
+-Tags `
+-Meal_type `
+-Comments `
+-Comments_Enabled `
+-Analytics
+    -views
+    -saves
