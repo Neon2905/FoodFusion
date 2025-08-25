@@ -41,7 +41,7 @@ FoodFusion is a content + social platform for recipes, video shows, chefs, and c
 
 ---
 
-## 3. Sitemap (top-level) — estimated pages ≈ 30 (configurable)
+## 3. Sitemap (top-level) — estimated pages ≈ 24 (configurable)
 
 1. Home (landing)
 2. Explore / Browse (discover)
