@@ -54,13 +54,13 @@ class User extends Authenticatable
         ];
     }
 
-    public static function boot()
-    {
-        parent::boot();
+    // public static function boot()
+    // {
+    //     parent::boot();
 
-        self::created(function ($model) {
-            $profile = new Profile();
-            $model->profile()->save($profile);
-        });
-    }
+    //     self::created(function ($model) {
+    //         $profile = new Profile();
+    //         $model->profile()->save($profile);
+    //     });
+    // }
 }
