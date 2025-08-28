@@ -1,8 +1,9 @@
 <nav class="sticky top-0 z-50 w-full flex flex-row items-center justify-between pt-[10px] px-[30px]">
-    <div class="flex items-center gap-0 text-display-sm drop-shadow-[0_4px_4px_rgba(0,0,0,.5)]">
+    <div class="flex items-center gap-0 text-display-md drop-shadow-[0_4px_4px_rgba(0,0,0,.5)]">
         <span class="text-primary">
             Food
-        </span><span class="text-accent">
+        </span>
+        <span class="text-accent">
             Fusion
         </span>
     </div>

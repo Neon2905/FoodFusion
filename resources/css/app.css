@@ -1,24 +1,39 @@
+/* stylelint-disable at-rule-no-unknown */
+
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Tienne:wght@400;700&display=swap");
 
 @theme {
     --font-body: "Inter", sans-serif;
     --font-highlight: "Tienne";
 
-    --text-display-lg: 4.5rem; /* 72px */
-    --text-display-md: 3.75rem; /* 60px */
-    --text-display-sm: 3rem; /* 48px */
+    --text-display-lg: 4.5rem;
+    /* 72px */
+    --text-display-md: 3.75rem;
+    /* 60px */
+    --text-display-sm: 3rem;
+    /* 48px */
 
-    --text-heading-lg: 1.5rem; /* 24px */
-    --text-heading-md: 1.25rem; /* 20px */
-    --text-heading-sm: 1rem; /* 16px */
+    --text-heading-lg: 1.5rem;
+    /* 24px */
+    --text-heading-md: 1.25rem;
+    /* 20px */
+    --text-heading-sm: 1rem;
+    /* 16px */
 
-    --text-subtitle-lg: 1rem; /* 16px */
-    --text-subtitle-md: 0.75rem; /* 12px */
-    --text-subtitle-sm: 0.5rem; /* 8px */
+    --text-subtitle-lg: 1rem;
+    /* 16px */
+    --text-subtitle-md: 0.75rem;
+    /* 12px */
+    --text-subtitle-sm: 0.5rem;
+    /* 8px */
 
-    --text-body-lg: 1rem; /* 16px */
-    --text-body-md: 0.875rem; /* 14px */
-    --text-body-sm: 0.75rem; /* 12px */
+    --text-body-lg: 1rem;
+    /* 16px */
+    --text-body-md: 0.875rem;
+    /* 14px */
+    --text-body-sm: 0.75rem;
+    /* 12px */
 
     --color-background: rgba(255, 255, 255, 1);
     /* @media (prefers-color-scheme: dark) {
@@ -29,6 +44,9 @@
     --color-secondary: rgba(205, 101, 101, 1);
     --color-accent: rgba(110, 204, 97, 1);
 
+    --color-gray: #d9d9d9;
+    --color-light-gray: rgba(255, 255, 255, 0.5);
+
     --color-muted: rgba(107, 114, 128, 1);
 
     --color-navbar-gray: rgba(217, 217, 217, 0.5);
@@ -38,6 +56,7 @@
     body {
         @apply font-body text-body-lg;
         letter-spacing: -0.05em;
+        line-height: auto;
     }
 
     /* Display */
@@ -56,11 +75,11 @@
 
     /* Subtitle */
     h4 {
-        @apply text-subtitle-md font-semibold;
+        @apply text-subtitle-lg font-semibold;
     }
 
     h5 {
-        @apply text-subtitle-sm font-semibold;
+        @apply text-subtitle-md font-semibold;
     }
 
     /* Body */
@@ -81,22 +100,25 @@
     .modal {
         @apply fixed w-full h-full inset-0 z-50 bg-white/10 backdrop-filter backdrop-blur-[1.5px] border border-white/20 saturate-[150%] contrast-[80%];
     }
+
     .modal-card {
-        @apply flex flex-col gap-[10px] bg-background p-[20px] rounded-2xl border border-navbar-gray drop-shadow-[0px_4px_4px_rgba(0,0,0,0.25)];
+        @apply flex flex-col gap-[10px] bg-background p-[20px] rounded-2xl border border-navbar-gray drop-shadow-[0px_4px_4px_rgba(0, 0, 0, 0.25)];
     }
 
     .nav-button {
-        @apply items-center justify-center rounded-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)] cursor-pointer text-heading-md font-semibold;
+        @apply items-center justify-center rounded-full drop-shadow-[0_2px_4px_rgba(0, 0, 0, 0.25)] cursor-pointer text-heading-md font-semibold;
     }
 
     .button {
-        @apply flex items-center justify-center rounded-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)] cursor-pointer text-body-lg font-bold transform origin-center transition-all duration-100 ease-in-out hover:scale-101 hover:shadow-lg;
+        @apply flex items-center justify-center rounded-lg drop-shadow-[0_2px_4px_rgba(0, 0, 0, 0.25)] cursor-pointer text-body-lg font-bold size-auto transform origin-center transition-all duration-100 ease-in-out hover:scale-101 hover:shadow-lg px-4 py-2 gap-2;
     }
+
     .input-box {
         @apply border border-gray-400 rounded-lg p-[10px] focus:outline-none focus:ring-2 focus:ring-primary;
     }
+
     .checkbox {
-        /* TODO: Review this later */
+        /* TO   DO: Review this later */
         @apply w-4 h-4 text-blue-600 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600;
     }
 }
