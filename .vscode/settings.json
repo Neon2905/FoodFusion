@@ -1,0 +1,28 @@
+{
+    // Enable Stylelint extension
+    "stylelint.enable": true,
+    // Validate these file types
+    "stylelint.validate": [
+        "css",
+        "scss",
+        "html",
+        "blade"
+    ],
+    // Use the local .stylelintrc.json config
+    "stylelint.configFile": ".stylelintrc.json",
+    // Automatically fix stylelint errors on save
+    "editor.codeActionsOnSave": {
+        // Enable stylelint-specific fix on save
+        "source.fixAll.stylelint": true
+    },
+    // Disable built-in CSS validation to avoid conflicts
+    "css.validate": false,
+    // Use stylelint as default formatter for CSS
+    "[css]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    // Use stylelint as default formatter for SCSS
+    "[scss]": {
+        "editor.defaultFormatter": "stylelint.vscode-stylelint"
+    }
+}
