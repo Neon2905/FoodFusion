@@ -8,27 +8,38 @@ FoodFusion is a content + social platform for recipes, video shows, chefs, and c
 
 ## 1. High-level architecture / components
 
-- Frontend
-  - Public website (responsive).
-  - Client-side routing, server-side rendering(Laravel - PHP).
-- Backend
-  - RESTful API, user auth, content service, media service (uncertain), search service.
-- Database(s)
-  - Relational DB (MySql) for structured data;
-<!--NoSQL (Mongo/Elastic) for flexible content/comments; Redis for caching and rate-limiting.
--->
-- Media & Video
-  - Limited media format for scalability (e.g., restrict upload size/duration, optimize formats, lazy-load images/videos).
-  - Cloud storage (S3), CDN (CloudFront), video transcoding (AWS Elemental / Mux).
-- Search & Recommendations
-  - ElasticSearch/OpenSearch for search and faceted filtering.
-  - Recommendation engine (collaborative + content-based) — Python microservice.
-- Analytics & Personalization
-  - Event pipeline (Segment / Snowplow) → data warehouse (BigQuery).
-- Third-party
-  - Social login (Google, Facebook, Apple), email (SendGrid), image optimization (Imgix).
-- Admin & Moderation
-  - Admin panel for content moderation, analytics, user management.
+- **Frontend**
+  - Responsive public website built with Laravel Blade templates.
+  - Server-side rendering via Laravel (PHP).
+
+- **Backend**
+  - Laravel application handles user authentication, content management, media uploads, and search integration.
+  - Business logic and data validation centralized in Laravel services and controllers.
+
+- **Database**
+  - MySQL relational database for structured data (users, recipes, comments, etc.).
+  - Redis for caching and rate-limiting. [Post-Development]
+
+- **Media & Video**
+  - Media uploads managed via Laravel filesystem abstraction.
+  - Cloud storage (e.g., AWS S3) for images and videos.
+  - CDN (e.g., CloudFront) for fast media delivery.
+  - Video transcoding handled by external services (e.g., AWS Elemental, Mux).
+
+- **Search & Recommendations**
+  - Integration with ElasticSearch/OpenSearch for advanced search and filtering.
+  - Recommendation logic as a Laravel service or external Python microservice.
+
+- **Analytics & Personalization**
+  - Event tracking pipeline (e.g., Segment) forwarding to a data warehouse (e.g., BigQuery) for analytics and personalization. [Unconfirmed]
+
+- **Third-party Integrations**
+  - Social login (Google, Facebook, Apple).
+  - Email delivery (SendGrid).
+  - Image optimization (Imgix or similar).
+
+- **Admin & Moderation** [Discontinued]
+  - Admin panel (Laravel Nova or custom) for content moderation, analytics, and user management.
 
 ---
 
@@ -36,7 +47,7 @@ FoodFusion is a content + social platform for recipes, video shows, chefs, and c
 
 - Guest / Anonymous visitor
 - Registered user / Home cook
-- Verified Creator / Chef / Brand — a Registered user recognized with a badge (e.g., blue check): can access creator tools
+- Verified Creator / Chef / Brand — a Registered user recognized with a badge (e.g., blue check): may access creator tools
 - Admin / Platform manager
 
 ---
@@ -48,25 +59,25 @@ FoodFusion is a content + social platform for recipes, video shows, chefs, and c
 3. Search results (recipes, videos, chefs, articles)
 4. Recipe page (detailed)
 5. Video page (show/episode)
-6. Chef profile / Creator page
-7. Collection / Channel page (e.g., “Vegan”, “Holiday”)
+6. Profile / Creator page
+7. Collection / Channel page (e.g., “Vegan”, “Holiday”) [Unconfirmed]
 8. Category pages (e.g., “Desserts”)
-9. Community / Forums / Q&A
+9. Community / Forums / Q&A [Unconfirmed]
 10. Saved / Favorites / Collections (user)
-11. My Recipes (user-submitted drafts)
+11. My Recipes (include user-submitted drafts)
 12. Create / Submit recipe (editor)
 13. Recipe editor (advanced)
 14. Notifications / Inbox [uncertain]
 15. Settings (profile, preferences, dietary)
-16. Contributor dashboard / Analytics
-17. Admin dashboard (content moderation, site config)
+16. Contributor dashboard / Analytics [Unconfirmed]
+17. Admin dashboard (content moderation, site config) [Unconfirmed]
 18. Privacy / Terms / About / Contact
 19. Help / FAQ / Tutorials
 20. Error / 404 / Maintenance pages
-21. API docs (optional)
-22. Accessibility options page
-23. Multi-lingual/localization switcher pages
-24. Developer/Partners (integrations)
+21. Application docs (optional)
+22. Accessibility options page [Unconfirmed]
+23. Multi-lingual/localization switcher pages [Unconfirmed]
+24. Developer/Partners (integrations) [Unconfirmed]
 
 ---
 
@@ -262,21 +273,40 @@ Example (conceptual):
 
 ## 6. How recipes are constructed (author & UX flow)
 
-1. Create metadata: title, description, tags, cuisine, servings.
-2. Add ingredients: structured entry with quantity, unit, linked canonical ingredient, optional flag, group label (e.g., Dough, Filling).
-3. Add steps: numbered, with rich text, images, and optional timers/temperature.
-4. Add media: hero image, step images, short video clips (mobile-first capture recommended).
-5. Nutrition: auto-calc from ingredients (editable by author).
-6. SEO & Schema: automatic JSON-LD generation; author can customize.
-7. Preview: desktop / mobile / printable view (print-friendly CSS).
-8. Publish options: publish now, schedule, or submit for editorial review.
-9. Post-publish: platform generates related content, pushes to subscribers, indexes in search.
+### How Recipes Are Constructed (Author & UX Flow)
+
+1. **Create Recipe Metadata**
+    -Define the recipe’s **title**, **slug** (unique), **description**, **cuisine**, **meal type**, **servings**, **difficulty**, **visibility**, and **author** (linked to a profile).
+
+2. **Add Ingredients**
+    - Specify each ingredient’s **name**, **quantity**, **unit**, **optional flag**, and **notes**. Ingredients are linked to the recipe.
+
+3. **Add Steps**
+    - List each step with its **order**, **description**, and optionally **duration** and **temperature**. Steps are linked to the recipe.
+
+4. **Add Media**
+    - Upload a **hero image URL** for the recipe, plus optional **media** (images/videos) with **alt text** and **captions**. Media is linked to the recipe.
+
+5. **Set Nutrition Facts**
+    - Enter **calories**, **fat**, **carbs**, **protein**, **fiber**, and **sugar**. Nutrition is linked to the recipe and can be edited by the author.
+
+6. **Enable or Disable Comments**
+    - Choose whether to allow comments for the recipe.
+
+7. **Optionally, Add Reviews and Ratings**
+    - Users can leave a **rating** and **review** for each recipe.
+
+8. **Save and Publish**
+    - Save the recipe, which is **timestamped** and can be set as **public**, **unlisted**, or **private**.
+
+9. **After Publishing**
+    - The recipe can be **edited** post-publication, and **analytics** (views, rating count) are tracked.
 
 ---
 
 ## 7. How things link (navigation & data flows)
 
-- Global navigation → Home / Search / Explore / Profile.
+- Global navigation → Home / Search / Explore / Profile / etc.
 - From a recipe, links to:
   - Chef profile (author)
   - Related recipes & variants
@@ -305,17 +335,16 @@ Example (conceptual):
 
 ---
 
-## 9. API & integrations (not confirmed)
+## 9. Server Routing (not confirmed)
 
 <!-- TODO: Review thie part to confirm -->
 - API endpoints (not confirmed)
-  - GET /api/recipes?query=&tags=&cuisine=&diet=
-  - GET /api/recipes/:id
-  - POST /api/recipes (auth/creator)
-  - PUT /api/recipes/:id
-  - POST /api/users/:id/save
-  - GET /api/search/suggest?q=
-  - POST /api/planner/week
+  - GET /recipes?query=&tags=&cuisine=&diet=
+  - GET /recipes/:id
+  - POST /recipes (auth/creator)
+  - PUT /recipes/:id
+  - POST /users/:id/save
+  - GET /search/suggest?q=
 - Integrations
   - Smart devices: oven or timer APIs (IoT integration). [uncertain]
   - Nutrition databases (USDA) for nutrition calculation. [uncertain]

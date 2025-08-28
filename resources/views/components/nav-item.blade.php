@@ -1,5 +1,6 @@
 @props(['label' => null, 'href' => '#', 'active' => null])
 
+{{-- TODO:migrate as css later --}}
 <div
     {{ $attributes->class([
         $active || request()->getRequestUri() == $href //TODO: find better solution

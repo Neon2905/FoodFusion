@@ -13,7 +13,9 @@
 
 <body class="bg-background">
     <x-navbar />
-    {{ $slot }}
+    <div {{ $attributes->class(['flex w-full px-12 mt-6']) }}>
+        {{ $slot }}
+    </div>
     <x-auth.login-modal />
     <x-auth.register-modal />
 </body>

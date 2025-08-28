@@ -2,6 +2,7 @@
 
 @theme {
     --font-body: "Inter", sans-serif;
+    --font-highlight: "Tienne";
 
     --text-display-lg: 4.5rem; /* 72px */
     --text-display-md: 3.75rem; /* 60px */
@@ -36,6 +37,39 @@
 @layer base {
     body {
         @apply font-body text-body-lg;
+        letter-spacing: -0.05em;
+    }
+
+    /* Display */
+    h1 {
+        @apply text-display-md font-semibold;
+    }
+
+    /* Heading */
+    h2 {
+        @apply text-heading-md font-bold;
+    }
+
+    h3 {
+        @apply text-heading-sm font-bold;
+    }
+
+    /* Subtitle */
+    h4 {
+        @apply text-subtitle-md font-semibold;
+    }
+
+    h5 {
+        @apply text-subtitle-sm font-semibold;
+    }
+
+    /* Body */
+    p {
+        @apply text-body-lg;
+    }
+
+    small {
+        @apply text-body-sm;
     }
 }
 
@@ -48,7 +82,7 @@
         @apply fixed w-full h-full inset-0 z-50 bg-white/10 backdrop-filter backdrop-blur-[1.5px] border border-white/20 saturate-[150%] contrast-[80%];
     }
     .modal-card {
-        @apply flex flex-col gap-[10px] bg-background p-[20px] rounded-2xl drop-shadow-[0px_4px_4px_rgba(0,0,0,0.25)];
+        @apply flex flex-col gap-[10px] bg-background p-[20px] rounded-2xl border border-navbar-gray drop-shadow-[0px_4px_4px_rgba(0,0,0,0.25)];
     }
 
     .nav-button {

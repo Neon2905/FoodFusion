@@ -8,7 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('/recipes', function () {
-    return view('welcome');
+    return view('recipe');
 });
 
 Route::get('/resources', function () {
