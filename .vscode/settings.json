@@ -18,7 +18,7 @@
     "css.validate": false,
     // Use stylelint as default formatter for CSS
     "[css]": {
-        "editor.defaultFormatter": "vscode.css-language-features"
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     // Use stylelint as default formatter for SCSS
     "[scss]": {
