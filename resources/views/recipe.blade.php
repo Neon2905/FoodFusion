@@ -74,7 +74,7 @@
                 <h4 class="text-muted">{{ $recipe->date }}</h4>
             </div>
             <div class="flex-center flex-col mt-2 gap-1">
-                <x-rating :value="$recipe->rating" />
+                <x-rating :value="$recipe->rating" class="w-40"/>
                 <h4 class="text-muted">{{ $recipe->reviews_count }} Reviews</h4>
             </div>
         </div>
@@ -159,7 +159,7 @@
         <div class="flex flex-col items-start rounded-xl w-full bg-gray px-6 py-7 gap-5">
             <div class="flex flex-col gap-1 items-start">
                 <h2 class="text-heading-lg">{{ $recipe->reviews_count }} Reviews</h2>
-                <x-rating value=4 />
+                <x-rating value=4 class="w-40" />
             </div>
             <form class="flex-center flex-col space-between gap-2 w-full p-3" method="POST" action="#">
                 @csrf
@@ -172,7 +172,7 @@
                 <div class="flex justify-between space-between w-full">
                     <div class="flex items-center gap-2 text-subtitle-lg font-semibold">
                         Your Rating:
-                        <x-rating />
+                        <x-rating class="w-40"/>
                     </div>
                     <button
                         class="flex-center justify-between button bg-tertiary text-black text-subtitle-md font-semibold rounded-full">

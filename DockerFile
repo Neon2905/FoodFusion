@@ -1,0 +1,84 @@
+# Stage 1: Node builder (build frontend assets with Vite)
+FROM node:18-alpine AS node-builder
+WORKDIR /app
+
+# Copy package files and vite configs first for caching
+COPY package*.json vite.config.js ./
+# Copy only the resources needed by vite to speed up layer caching
+COPY resources resources
+RUN npm ci --no-audit --prefer-offline
+RUN npm run build
+
+# Stage 2: Composer dependencies
+FROM composer:2 AS composer
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
+
+# Stage 3: Final runtime (php-fpm + nginx)
+FROM php:8.2-fpm-alpine
+
+# Install system packages and PHP extensions commonly needed by Laravel
+RUN apk add --no-cache nginx supervisor bash git icu-dev libpng libpng-dev libzip-dev oniguruma-dev tzdata \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath intl gd zip \
+    && apk del icu-dev libpng-dev libzip-dev
+
+# Create application user
+RUN addgroup -g 1000 app && adduser -u 1000 -G app -s /bin/sh -D app
+
+# Create directories
+WORKDIR /var/www/html
+RUN chown -R app:app /var/www/html
+USER app
+
+# Copy application code
+COPY --chown=app:app . .
+
+# Copy composer vendor from composer stage
+USER root
+COPY --from=composer --chown=app:app /app/vendor /var/www/html/vendor
+
+# Copy built assets from node-builder (Vite outputs to /public)
+COPY --from=node-builder --chown=app:app /app/public /var/www/html/public
+
+# Copy nginx config
+COPY --chown=root:root deploy/nginx.conf /etc/nginx/conf.d/default.conf
+
+## Supervisor config to run php-fpm and nginx (write file with RUN+cat to avoid COPY heredoc checksum issues)
+RUN mkdir -p /var/log/supervisor \
+ && cat > /etc/supervisord.conf <<'SUPERVISOR'
+[supervisord]
+nodaemon=true
+logfile=/var/log/supervisor/supervisord.log
+
+[program:php-fpm]
+command=/usr/local/sbin/php-fpm
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/php-fpm.log
+stderr_logfile=/var/log/supervisor/php-fpm.err
+
+[program:nginx]
+command=/usr/sbin/nginx -g "daemon off;"
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/nginx.log
+stderr_logfile=/var/log/supervisor/nginx.err
+SUPERVISOR
+RUN chown root:root /etc/supervisord.conf || true
+
+# Expose port
+EXPOSE 80
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s CMD wget -qO- http://127.0.0.1/ || exit 1
+
+# Set permissions and final entry
+RUN chown -R app:app /var/www/html && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache || true
+
+USER app
+ENV PATH="./vendor/bin:${PATH}"
+
+# Entrypoint
+USER root
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
