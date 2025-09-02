@@ -38,15 +38,15 @@ COPY --chown=app:app . .
 USER root
 COPY --from=composer --chown=app:app /app/vendor /var/www/html/vendor
 
-# Copy built assets from node-builder (Vite outputs to /public/build)
+# Copy built assets from node-builder (Vite outputs to /public)
 COPY --from=node-builder --chown=app:app /app/public /var/www/html/public
 
 # Copy nginx config
 COPY --chown=root:root deploy/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Supervisor config to run php-fpm and nginx
-RUN mkdir -p /var/log/supervisor
-COPY --chown=root:root - <<'SUPERVISOR' >/etc/supervisord.conf
+## Supervisor config to run php-fpm and nginx (write file with RUN+cat to avoid COPY heredoc checksum issues)
+RUN mkdir -p /var/log/supervisor \
+ && cat > /etc/supervisord.conf <<'SUPERVISOR'
 [supervisord]
 nodaemon=true
 logfile=/var/log/supervisor/supervisord.log
@@ -60,10 +60,12 @@ stderr_logfile=/var/log/supervisor/php-fpm.err
 
 [program:nginx]
 command=/usr/sbin/nginx -g "daemon off;"
+autostart=true
 autorestart=true
 stdout_logfile=/var/log/supervisor/nginx.log
 stderr_logfile=/var/log/supervisor/nginx.err
 SUPERVISOR
+RUN chown root:root /etc/supervisord.conf || true
 
 # Expose port
 EXPOSE 80
