@@ -11,6 +11,13 @@
         'image' =>
             'https://food.fnr.sndimg.com/content/dam/images/food/fullset/2022/12/19/KC3213-katie-lee-biegel-lemon-garlic-chicken_s4x3.jpg.rend.hgtvcom.826.620.suffix/1671496800903.webp',
         'total_time' => 125,
+        'description' => '
+                I love dishes that can be made in advance for a
+                dinner party. This
+                chicken is totally simple. You marinate
+                it in the same dish you cook it in, then pop it in the oven about 45 minutes before you want to eat.
+                It’s so
+                easy and flavorful—a real crowd pleaser!',
         'prep_time' => 25,
         'level' => 'Easy',
         'cuisine' => 'Malaysian',
@@ -119,12 +126,9 @@
         </div>
         {{-- description --}}
         <div class="px-3 w-full">
-            <h3 class="text-heading-md font-highlight font-medium">I love dishes that can be made in advance for a
-                dinner party. This
-                chicken is totally simple. You marinate
-                it in the same dish you cook it in, then pop it in the oven about 45 minutes before you want to eat.
-                It’s so
-                easy and flavorful—a real crowd pleaser!</>
+            <h3 class="text-heading-md font-highlight font-medium">
+                {{ $recipe->description }}
+            </h3>
         </div>
         {{-- directions --}}
         <div class="flex flex-col text-left w-full p-2 gap-2">
