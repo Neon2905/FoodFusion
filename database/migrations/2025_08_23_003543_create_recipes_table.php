@@ -82,7 +82,7 @@ return new class extends Migration {
 
         Schema::create('recipe_media', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
+            $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
             $table->text('url');
             $table->enum('type', ['image', 'video'])->default('image');
             $table->string('alt')->nullable();
