@@ -27,6 +27,11 @@ class AuthController extends Controller
         ]);
     }
 
+    public function register(Request $request)
+    {
+        return $this->signup($request);
+    }
+
     public function signup(Request $request)
     {
         // Validate the request
