@@ -17,28 +17,34 @@
         </div>
     </div>
 
-    @if (auth()->check())
+    @auth
         <div
             class="bg-navbar-gray flex-center h-[56px] py-[8px] rounded-full border border-[rgba(191,191,191,0.5)] filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] px-[12px]">
             <div class="flex-center flex-row h-full gap-2">
                 <x-nav-item>
-                    <x-css-search class="h-[24px] w-[24px] cursor-pointer" />
+                    <x-css-search class="size-6 cursor-pointer" />
                 </x-nav-item>
                 <x-nav-item>
-                    <x-css-profile class="h-[24px] w-[24px] cursor-pointer" />
+                    <x-css-profile class="size-6 cursor-pointer" />
+                </x-nav-item>
+                <x-nav-item class="flex-center">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="flex-center" type="submit">
+                            <x-css-push-right class="size-6 cursor-pointer" />
+                        </button>
+                    </form>
                 </x-nav-item>
             </div>
         </div>
     @else
-        <div class="h-[60px] py-[4px] flex-center gap-[16px]">
-            <button class="nav-button w-[100px] border-[1px] h-[40px] bg-white border-primary"
-                onclick="window.location.href='{{ request()->fullUrlWithQuery(['login' => 1]) }}'">
+        <div class="h-15 py-1 flex-center gap-4">
+            <button class="nav-button w-25 border-[1px] h-10 bg-white border-primary" @click="toggleLoginModal()">
                 Log In
             </button>
-            <button class="nav-button w-[100px] h-[40px] bg-accent"
-                onclick="window.location.href='{{ request()->fullUrlWithQuery(['register' => 1]) }}'">
+            <button class="nav-button w-25 h-10 bg-accent" @click="toggleRegisterModal()">
                 Join Us
             </button>
         </div>
-    @endif
+    @endauth
 </nav>

@@ -64,7 +64,9 @@
     ];
 @endphp
 
-<x-app class="gap-5">
+@extends('layouts.app')
+
+@section('content')
     <div class="modal-card px-6 flex-1 gap-7">
         {{-- header --}}
         <div class="flex-center flex-col gap-1">
@@ -74,7 +76,7 @@
                 <h4 class="text-muted">{{ $recipe->date }}</h4>
             </div>
             <div class="flex-center flex-col mt-2 gap-1">
-                <x-rating :value="$recipe->rating" class="w-40"/>
+                <x-rating :value="$recipe->rating" class="w-40" />
                 <h4 class="text-muted">{{ $recipe->reviews_count }} Reviews</h4>
             </div>
         </div>
@@ -172,7 +174,7 @@
                 <div class="flex justify-between space-between w-full">
                     <div class="flex items-center gap-2 text-subtitle-lg font-semibold">
                         Your Rating:
-                        <x-rating class="w-40"/>
+                        <x-rating class="w-40" />
                     </div>
                     <button
                         class="flex-center justify-between button bg-tertiary text-black text-subtitle-md font-semibold rounded-full">
@@ -181,8 +183,7 @@
                 </div>
             </form>
             <div class="flex-center w-full flex-col gap-3">
-                <div
-                    class="flex justify-end items-center w-full border-b border-on-background text-subtitle-md gap-1 pb-2">
+                <div class="flex justify-end items-center w-full border-b border-on-background text-subtitle-md gap-1 pb-2">
                     Sort by
                     <x-icons.chevron-down class="ml-2" />
                 </div>
@@ -221,4 +222,4 @@
         <div class="modal-card w-full h-50"></div>
         <div class="flex-1"></div>
     </div>
-</x-app>
+@endsection
