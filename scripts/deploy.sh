@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+cd /var/www/html
+
 echo "Starting Laravel deployment script..."
 
 echo "installing npm packages"
