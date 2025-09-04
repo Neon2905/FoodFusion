@@ -4,11 +4,9 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Install Node.js and npm
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
+# Install Node.js and npm (Alpine version)
+RUN apk update && \
+    apk add --no-cache curl nodejs npm
 
 # Image config
 ENV SKIP_COMPOSER 1
