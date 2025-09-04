@@ -9,7 +9,7 @@
             <div class="flex-center w-full text-heading-lg font-semibold">
                 Log In
             </div>
-            <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-[20px] px-[20px]">
+            <form method="POST" action="/login" class="flex flex-col gap-[20px] px-[20px]">
                 @csrf
                 <div class="flex flex-col gap-2">
                     <label for="email" class="text-body-lg font-bold">
@@ -58,7 +58,7 @@
             </div>
             <p class="flex-center text-subtitle-md font-medium gap-1">
                 Don't have an account yet?
-                <a href="{{ url()->current() }}?register=1" class="text-primary">Register</a>
+                <button class="text-primary" @click="toggleRegisterModal()">Register</button>
             </p>
         </div>
     </div>

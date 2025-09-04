@@ -25,7 +25,6 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/login', function () {
     // Handle login logic
-    dd('Login route hit');
 })->name('login');
 
 Route::get('/logout', [AuthController::class, 'logout']);

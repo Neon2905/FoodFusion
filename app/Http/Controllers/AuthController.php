@@ -16,15 +16,15 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
         // Attempt to log the user in
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/');
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'error' => 'The provided credentials do not match our records.',
+            ]);
         }
 
-        // Authentication failed
-        return back()->withErrors([
-            'error' => 'The provided credentials do not match our records.',
-        ]);
+        // Authentication successful
+        $request->session()->regenerate();
+        return redirect()->intended('/');
     }
 
     public function register(Request $request)
@@ -36,7 +36,7 @@ class AuthController extends Controller
     {
         // Validate the request
         $validated = $request->validate([
-            'email' => ['required', 'email', 'unique:users,email'],
+            'email' => ['required', 'email', 'unique:users.email'],
             'password' => ['required', 'min:8', 'confirmed'],
         ]);
 

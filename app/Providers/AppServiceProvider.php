@@ -19,7 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // TODO: Resolve this
         if (env('APP_ENV') == 'production') {
             $this->app['request']->server->set('HTTPS', true);
         }

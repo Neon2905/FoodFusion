@@ -64,7 +64,7 @@
     ];
 @endphp
 
-@extends('layouts.app')
+@extends('layouts.app', ['title' => $recipe->title])
 
 @section('content')
     <div class="modal-card px-6 flex-1 gap-7">
