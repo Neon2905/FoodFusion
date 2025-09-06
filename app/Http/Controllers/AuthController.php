@@ -16,7 +16,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
         // Attempt to log the user in
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::attempt(credentials: $credentials)) {
             return back()->withErrors([
                 'error' => 'The provided credentials do not match our records.',
             ]);
@@ -29,20 +29,14 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        return $this->signup($request);
-    }
-
-    public function signup(Request $request)
-    {
         // Validate the request
         $validated = $request->validate([
-            'email' => ['required', 'email', 'unique:users.email'],
+            'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8', 'confirmed'],
         ]);
 
         // Create the user
         $user = \App\Models\User::create([
-            'name' => 'John', // TODO
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
         ]);
@@ -50,7 +44,11 @@ class AuthController extends Controller
         // Log the user in
         Auth::login($user);
 
-        return redirect()->intended('/');
+        // Send verification email
+        $user->sendEmailVerificationNotification();
+
+        // Redirect to a page telling user to check their email
+        return redirect('/email/verify');
     }
 
     public function logout(Request $request)

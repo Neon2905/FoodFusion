@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('author_id')->constrained('profiles')->cascadeOnDelete();
+            $table->foreignId('profile_id')->constrained('profiles')->cascadeOnDelete();
             $table->string('slug')->unique();
 
             $table->string('title');
@@ -33,7 +33,7 @@ return new class extends Migration {
             $table->enum('visibility', ['public', 'unlisted', 'private'])->default('public');
             // $table->string('language', 20)->nullable();
 
-            $table->integer('rating_count')->default(0);
+            $table->integer('rating')->default(0);
 
             // $table->integer('analytics_views')->default(0);
             $table->bigInteger('analytics_views')->default(0);
@@ -41,63 +41,13 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('recipe_steps', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-            $table->integer('step_order')->default(1);
-            $table->text('description');
-            $table->integer('duration')->nullable();
-            $table->string('temperature')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('recipe_ingredients', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-            $table->string('name');
-            $table->decimal('quantity', 8, 2)->nullable();
-            $table->string('unit', 50)->nullable();
-            // $table->uuid('ingredient_ref')->nullable(); // can constrain to ingredients table
-            $table->boolean('is_optional')->default(false);
-            $table->text('note')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('recipe_reviews', function (Blueprint $table) {
-            $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-            $table->foreignId('profile_id')->constrained('profiles')->cascadeOnDelete();
-            $table->primary(['recipe_id', 'profile_id']);
-            $table->tinyInteger('rating')->unsigned()->default(5);
-            $table->text('review')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('recipe_comments', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-            $table->foreignId('profile_id')->constrained('profiles')->cascadeOnDelete();
-            $table->text('comment');
-            $table->timestamps();
-        });
-
-        Schema::create('recipe_media', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-            $table->text('url');
-            $table->enum('type', ['image', 'video'])->default('image');
-            $table->string('alt')->nullable();
-            $table->string('caption')->nullable();
-        });
-
-        Schema::create('recipe_nutrition', function (Blueprint $table) {
-            $table->foreignId('recipe_id')->primary()->constrained('recipes')->cascadeOnDelete();
-            $table->integer('calories')->nullable();
-            $table->decimal('fat', 6, 2)->nullable();
-            $table->decimal('carbs', 6, 2)->nullable();
-            $table->decimal('protein', 6, 2)->nullable();
-            $table->decimal('fiber', 6, 2)->nullable();
-            $table->decimal('sugar', 6, 2)->nullable();
-        });
+        // Schema::create('comments', function (Blueprint $table) {
+        //     $table->bigIncrements('id');
+        //     $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
+        //     $table->foreignId('profile_id')->constrained('profiles')->cascadeOnDelete();
+        //     $table->text('comment');
+        //     $table->timestamps();
+        // });
 
         // Schema::create('recipe_tags', function (Blueprint $table) {
         //     $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
@@ -118,12 +68,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('recipes');
-        Schema::dropIfExists('recipe_steps');
-        Schema::dropIfExists('recipe_ingredients');
-        Schema::dropIfExists('recipe_reviews');
-        Schema::dropIfExists('recipe_comments');
-        Schema::dropIfExists('recipe_media');
-        Schema::dropIfExists('recipe_nutrition');
+        // Schema::dropIfExists('comments');
         // Schema::dropIfExists('recipe_meal_types');
     }
 };

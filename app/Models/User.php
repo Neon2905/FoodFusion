@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Models\Profile;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -36,7 +37,7 @@ class User extends Authenticatable
     /**
      * Get the user's profile.
      */
-    public function profile(): HasOne
+    public function profile()
     {
         return $this->hasOne(Profile::class);
     }
@@ -54,13 +55,14 @@ class User extends Authenticatable
         ];
     }
 
-    // public static function boot()
-    // {
-    //     parent::boot();
+    public static function boot()
+    {
+        parent::boot();
 
-    //     self::created(function ($model) {
-    //         $profile = new Profile();
-    //         $model->profile()->save($profile);
-    //     });
-    // }
+        static::created(function ($user) {
+            $user->profile()->create(
+                ['name' => explode('@', $user->email)[0]]
+            );
+        });
+    }
 }
