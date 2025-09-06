@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AuthController;
 
-Route::get('/test', function() {
+Route::get('/test', function () {
     return view('recipe');
 });
 
@@ -28,10 +28,14 @@ Route::get('/about', function () {
     return view('welcome');
 });
 
+
+
+/*
+    Auth Routes
+ */
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::get('/login', function () {
     // return view('auth.login');
 })->name('login');
@@ -39,13 +43,20 @@ Route::get('/login', function () {
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/login/{provider}', [AuthController::class, 'redirectToProvider'])
+    ->where('provider', 'facebook|apple|google')
+    ->name('oauth.redirect');
+
+// OAuth callback
+Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])
+    ->where('provider', 'facebook|apple|google')
+    ->name('oauth.callback');
 
 // Show verification notice
 Route::get('/email/verify', function (Request $request) {
     // $request->user()->sendEmailVerificationNotification();
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
-
 
 // Resend verification email
 Route::post('/email/verification-notification', function (Request $request) {
