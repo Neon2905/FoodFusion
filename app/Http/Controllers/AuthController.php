@@ -76,12 +76,12 @@ class AuthController extends Controller
         if (!$user) {
             // Create user + profile
             $user = User::create([
-                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
                 'email' => $socialUser->getEmail(),
+                // 'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
                 'email_verified_at' => now(),
                 'provider' => $provider,
                 'provider_id' => $socialUser->getId(),
-                'avatar' => $socialUser->getAvatar(),
+                // 'avatar' => $socialUser->getAvatar(),
                 'password' => bcrypt(bin2hex(random_bytes(10))), // random password
             ]);
         } else {
