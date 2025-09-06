@@ -32,25 +32,20 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8', 'confirmed'],
         ]);
 
-        // Create the user
         $user = User::create([
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
         ]);
 
-        // Log the user in
         Auth::login($user);
 
-        // Send verification email
         $user->sendEmailVerificationNotification();
 
-        // Redirect to a page telling user to check their email
         return redirect('/email/verify');
     }
 
@@ -59,12 +54,10 @@ class AuthController extends Controller
         return Socialite::driver($provider)->redirect();
     }
 
-    // Handle callback
     public function handleProviderCallback($provider)
     {
         $socialUser = Socialite::driver($provider)->user();
 
-        // Find existing user by provider_id or email
         $user = User::where('provider', $provider)
             ->where('provider_id', $socialUser->getId())
             ->first();
@@ -74,22 +67,27 @@ class AuthController extends Controller
         }
 
         if (!$user) {
-            // Create user + profile
+            error_log("New user creating for " . $socialUser->getEmail());
+            error_log("profile_url: " . $socialUser->getAvatar());
+
             $user = User::create([
                 'email' => $socialUser->getEmail(),
-                // 'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
                 'email_verified_at' => now(),
                 'provider' => $provider,
                 'provider_id' => $socialUser->getId(),
-                // 'avatar' => $socialUser->getAvatar(),
                 'password' => bcrypt(bin2hex(random_bytes(10))), // random password
             ]);
+
+            $user->profile->update([
+                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
+                'profile' => $socialUser->getAvatar(),
+            ]);
         } else {
+            // TODO: Decide if this is necessary
             // Update provider fields if missing
             $user->update([
                 'provider' => $user->provider ?? $provider,
                 'provider_id' => $user->provider_id ?? $socialUser->getId(),
-                'avatar' => $user->avatar ?? $socialUser->getAvatar(),
             ]);
         }
 

@@ -141,7 +141,8 @@
             <ol class="list-decimal list-inside space-y-2 px-2 text-body-lg font-semibold">
                 @foreach ($recipe->steps as $instruction)
                     <li>
-                        {{ ucfirst($instruction->title) }}: <span class="font-medium">{{ ucfirst($instruction->instruction) }}</span>
+                        {{ ucfirst($instruction->title) }}: <span
+                            class="font-medium">{{ ucfirst($instruction->instruction) }}</span>
                     </li>
                 @endforeach
             </ol>
@@ -170,9 +171,9 @@
                 @csrf
                 <div class="flex justify-start gap-2 w-full">
                     @auth
-                        <img class="rounded rounded-full size-13" src="{{ auth()->user()->profile }}" alt="">
+                        <img class="rounded rounded-full size-13" src="{{ auth()->user()->profile->profile }}" alt="">
                     @endauth
-                    <textarea
+                    <textarea name="review"
                         class="flex-1 rounded-lg px-4 py-2 text-body-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-y min-h-20"
                         placeholder="Did you make this recipe? Leave a review!"></textarea>
                 </div>
