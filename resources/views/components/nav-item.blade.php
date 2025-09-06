@@ -9,9 +9,7 @@
         'transition duration-100 ease-in-out flex-center px-[10px] rounded-full h-full cursor-pointer',
     ]) }}>
     <span class="text-heading-lg font-bold">
-        {{ $slot }}
-        @if ($label)
-            <a class="no-underline" href="{{ $href }}">{{ $label }}</a>
-        @endif
+        <a class="no-underline" href="{{ $href }}">{{ $label }}
+            {{ $slot }}</a>
     </span>
 </div>

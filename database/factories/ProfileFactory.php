@@ -21,7 +21,7 @@ class ProfileFactory extends Factory
             'user_id' => User::factory(),
             'name' => $this->faker->name(),
             'bio' => $this->faker->paragraph(),
-            'avatar_path' => null,
+            'profile' => 'https://randomuser.me/api/portraits/men/' . $this->faker->numberBetween(1, 99) . '.jpg',
             'social_links' => [],
             'follower_count' => $this->faker->numberBetween(0, 1000),
         ];

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Profile;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\RecipeSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,13 +17,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->has(Profile::factory())->create([
+        User::factory()->create([
             'email' => 'test@example.com',
         ]);
 
-        User::factory()->has(Profile::factory())->create([
+        User::factory()->create([
             'email' => 'tpshine1234@gmail.com',
             'password' => bcrypt('Password'),
         ]);
+
+        $this->call(RecipeSeeder::class);
     }
 }

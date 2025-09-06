@@ -8,6 +8,7 @@ Alpine.store('modals', {
     register: false
 });
 
+// TODO: Refactor these functions into Alpine component methods
 window.toggleLoginModal = function () {
     Alpine.store('modals').login = !Alpine.store('modals').login;
     Alpine.store('modals').register = false;
