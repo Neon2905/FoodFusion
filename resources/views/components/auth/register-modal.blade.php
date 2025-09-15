@@ -31,6 +31,11 @@
                     <input type="password" name="password_confirmation" id="password_confirmation" required
                         class="input-box">
                 </div>
+                @if ($errors->any())
+                    <div class="text-red-600 text-body-sm">
+                        {{ $errors->first('error') }}
+                    </div>
+                @endif
                 <div class="flex flex-row items-start gap-[10px]">
                     <input id="agree" type="checkbox" class="checkbox">
                     <label for="agree" class="text-subtitle-md font-medium text-muted">
@@ -49,18 +54,7 @@
                 <div class="text-heading-sm font-bold">
                     OR CONTINUE WITH
                 </div>
-                <div class="flex-center rounded-full bg-gray-200 p-1 h-[40px]">
-                    <x-nav-item href="#">
-                        <img src="{{ asset('images/logos/facebook.svg') }}" alt="Facebook Logo"
-                            class="h-[24px] w-[24px]">
-                    </x-nav-item>
-                    <x-nav-item href="#">
-                        <img src="{{ asset('images/logos/google.svg') }}" alt="Google Logo" class="h-[24px] w-[24px]">
-                    </x-nav-item>
-                    <x-nav-item href="#">
-                        <img src="{{ asset('images/logos/apple.svg') }}" alt="Apple Logo" class="h-[24px] w-[24px]">
-                    </x-nav-item>
-                </div>
+                <x-auth.oauth />
             </div>
             <div class="flex-center text-subtitle-md font-medium gap-1">
                 Already a member?

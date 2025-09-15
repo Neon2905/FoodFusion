@@ -35,12 +35,8 @@ Route::get('/about', function () {
  */
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/login', function () {
-    // return view('auth.login');
-})->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/logout', [AuthController::class, 'logout']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/login/{provider}', [AuthController::class, 'redirectToProvider'])

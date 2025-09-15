@@ -18,6 +18,7 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
+
         // Attempt to log the user in
         if (!Auth::attempt(credentials: $credentials)) {
             return back()->withErrors([
@@ -26,8 +27,9 @@ class AuthController extends Controller
         }
 
         // Authentication successful
-        $request->session()->regenerate();
-        return redirect()->intended('/');
+        $user = User::where('email', $credentials['email'])->first();
+        Auth::login($user, true);
+        return redirect()->intended('/recipes');
     }
 
     public function register(Request $request)
@@ -67,9 +69,6 @@ class AuthController extends Controller
         }
 
         if (!$user) {
-            error_log("New user creating for " . $socialUser->getEmail());
-            error_log("profile_url: " . $socialUser->getAvatar());
-
             $user = User::create([
                 'email' => $socialUser->getEmail(),
                 'email_verified_at' => now(),
