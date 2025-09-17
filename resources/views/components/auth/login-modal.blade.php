@@ -9,7 +9,7 @@
             <div class="flex-center w-full text-heading-lg font-semibold">
                 Log In
             </div>
-            <form method="POST" action="/login" class="flex flex-col gap-[20px] px-[20px]">
+            <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-[20px] px-[20px]">
                 @csrf
                 <div class="flex flex-col gap-2">
                     <label for="email" class="text-body-lg font-bold">
@@ -43,18 +43,7 @@
                 <div class="text-heading-sm font-bold">
                     OR CONTINUE WITH
                 </div>
-                <div class="flex-center rounded-full bg-gray-200 p-1 h-[40px]">
-                    <x-nav-item href="{{ route('oauth.redirect', ['provider' => 'facebook']) }}">
-                        <img src="{{ asset('images/logos/facebook.svg') }}" alt="Facebook Logo"
-                            class="h-[24px] w-[24px]">
-                    </x-nav-item>
-                    <x-nav-item href="{{ route('oauth.redirect', ['provider' => 'google']) }}">
-                        <img src="{{ asset('images/logos/google.svg') }}" alt="Google Logo" class="h-[24px] w-[24px]">
-                    </x-nav-item>
-                    <x-nav-item href="{{ route('oauth.redirect', ['provider' => 'apple']) }}">
-                        <img src="{{ asset('images/logos/apple.svg') }}" alt="Apple Logo" class="h-[24px] w-[24px]">
-                    </x-nav-item>
-                </div>
+                <x-auth.oauth/>
             </div>
             <p class="flex-center text-subtitle-md font-medium gap-1">
                 Don't have an account yet?

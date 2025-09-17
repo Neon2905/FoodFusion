@@ -21,7 +21,7 @@ class Profile extends Model
         'user_id',
         'name',
         'bio',
-        'avatar_path',
+        'profile',
         'social_links',
         'follower_count',
     ];

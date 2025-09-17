@@ -21,11 +21,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        User::factory()->create([
-            'email' => 'tpshine1234@gmail.com',
-            'password' => bcrypt('Password'),
-        ]);
-
         $this->call(RecipeSeeder::class);
     }
 }

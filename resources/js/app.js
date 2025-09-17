@@ -9,6 +9,8 @@ Alpine.store('modals', {
 });
 
 // TODO: Refactor these functions into Alpine component methods
+// TODO: fix this to store the state after page reload
+
 window.toggleLoginModal = function () {
     Alpine.store('modals').login = !Alpine.store('modals').login;
     Alpine.store('modals').register = false;
@@ -20,3 +22,4 @@ window.toggleRegisterModal = function () {
 };
 
 Alpine.start();
+

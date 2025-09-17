@@ -8,7 +8,7 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/test', function () {
-    return view('recipe');
+    return view('auth.recover-password');
 });
 
 
@@ -35,12 +35,8 @@ Route::get('/about', function () {
  */
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/login', function () {
-    // return view('auth.login');
-})->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/logout', [AuthController::class, 'logout']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/login/{provider}', [AuthController::class, 'redirectToProvider'])
@@ -69,6 +65,18 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     $request->fulfill();
     return redirect('/profile'); // or wherever you want to redirect after verification
 })->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::get('/recover-password', function () {
+    return view('auth.recover-password');
+})->name('password.recover');
+
+Route::post('/recover-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+
+    // TODO: For demonstration, it'll just return a success message.
+
+    return back()->with('status', 'If your email is registered, you will receive a password reset link.');
+})->name('password.recover');
 
 // Route::middleware(['auth', 'verified'])->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'show']);

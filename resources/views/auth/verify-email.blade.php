@@ -8,7 +8,7 @@
                 Before proceeding, please check your email
                 <span class="font-semibold">
                     {{-- TODO: fix later --}}
-                    {{ preg_replace('/(.).*(.).*@(.).*(\.[a-z]+)/', '$1****$2@***$4', auth()->user()->email) }}
+                    {{ mask_email(auth()->user()->email) }}
                 </span> for
                 a verification link.<br>
                 If you did not receive the email,
