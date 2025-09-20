@@ -41,20 +41,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // Schema::create('comments', function (Blueprint $table) {
-        //     $table->bigIncrements('id');
-        //     $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-        //     $table->foreignId('profile_id')->constrained('profiles')->cascadeOnDelete();
-        //     $table->text('comment');
-        //     $table->timestamps();
-        // });
-
-        // Schema::create('recipe_tags', function (Blueprint $table) {
-        //     $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
-        //     $table->string('tag', 50);
-        //     $table->primary(['recipe_id', 'tag']);
-        // });
-
         // Schema::create('recipe_meal_types', function (Blueprint $table) {
         //     $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
         //     $table->string('meal_type', 50);

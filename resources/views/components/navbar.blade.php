@@ -24,7 +24,8 @@
                 <x-nav-item>
                     <x-css-search class="size-6 cursor-pointer" />
                 </x-nav-item>
-                <x-nav-item>
+                {{-- TODO: Optimize or create new route --}}
+                <x-nav-item href="{{ route('profile.show', auth()->user()->username) }}">
                     <x-css-profile class="size-6 cursor-pointer" />
                 </x-nav-item>
                 <x-nav-item class="flex-center">

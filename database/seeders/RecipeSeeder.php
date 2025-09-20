@@ -25,7 +25,8 @@ class RecipeSeeder extends Seeder
             ->create()
             ->each(function (Recipe $recipe) {
                 // Steps
-                for ($i = 1; $i <= 5; $i++) {
+                $stepsCount = fake()->numberBetween(5, 15);
+                for ($i = 1; $i <= $stepsCount; $i++) {
                     RecipeStep::create([
                         'recipe_id' => $recipe->id,
                         'step_order' => $i,
@@ -35,13 +36,66 @@ class RecipeSeeder extends Seeder
                     ]);
                 }
 
+                $fakeTags = [
+                    'vegan',
+                    'gluten-free',
+                    'spicy',
+                    'quick',
+                    'healthy',
+                    'dessert',
+                    'breakfast',
+                    'dinner',
+                    'snack',
+                    'low-carb',
+                    'high-protein',
+                    'vegetarian',
+                    'easy',
+                    'family',
+                    'holiday',
+                    'comfort',
+                    'classic',
+                    'fresh',
+                    'seasonal',
+                    'grilled'
+                ];
+
+                // Tags
+                for ($i = 1; $i <= fake()->numberBetween(1, 10); $i++) {
+                    $recipe->tags()->create([
+                        'name' => fake()->randomElement($fakeTags),
+                    ]);
+                }
+
+                // Tips
+                $tipCount = fake()->numberBetween(1, 6);
+                for ($i = 1; $i <= $tipCount; $i++) {
+                    $recipe->tips()->create([
+                        'content' => fake()->sentence(),
+                    ]);
+                }
+
                 // Ingredients
                 $ingredients = [
                     'flour' => [1, 'cup'],
                     'eggs' => [2],
                     'sugar' => [1 / 2, 'cup'],
                     'salt' => [1, 'tbsp'],
-                    'olive oil' => [1, 'tbsp']
+                    'olive oil' => [1, 'tbsp'],
+                    'milk' => [1, 'cup'],
+                    'butter' => [2, 'tbsp'],
+                    'baking powder' => [1, 'tsp'],
+                    'vanilla extract' => [1, 'tsp'],
+                    'chocolate chips' => [1 / 2, 'cup'],
+                    'cheese' => [1 / 2, 'cup'],
+                    'tomato' => [1],
+                    'onion' => [1],
+                    'garlic' => [2, 'cloves'],
+                    'pepper' => [1, 'tsp'],
+                    'spinach' => [1, 'cup'],
+                    'chicken breast' => [1],
+                    'lemon juice' => [1, 'tbsp'],
+                    'parsley' => [2, 'tbsp'],
+                    'mushrooms' => [1 / 2, 'cup'],
                 ];
                 foreach ($ingredients as $name => $ing) {
                     Ingredient::create([

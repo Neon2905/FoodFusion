@@ -23,3 +23,6 @@ window.toggleRegisterModal = function () {
 
 Alpine.start();
 
+window.redirect = function (to) {
+    window.location.href = to;
+}

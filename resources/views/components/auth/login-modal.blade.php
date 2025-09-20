@@ -1,7 +1,13 @@
-<div class="modal flex-center" x-show="$store.modals.login" x-transition.opacity.duration.300ms>
+@props([
+    'show' => '$store.modals.login',
+    'onClose' => 'toggleLoginModal()',
+    'onRegister' => 'toggleRegisterModal()',
+])
+
+<div class="modal flex-center" x-show="{{ $show }}" x-transition.opacity.duration.300ms>
     <div class="modal-card bg-background p-[20px] w-[380px]">
         <div class="flex justify-end">
-            <button @click="toggleLoginModal()">
+            <button @click="{{ $onClose }}">
                 <x-css-close class="h-[24px] w-[24px] fill-gray-400 hover:fill-gray-800" />
             </button>
         </div>
@@ -43,11 +49,11 @@
                 <div class="text-heading-sm font-bold">
                     OR CONTINUE WITH
                 </div>
-                <x-auth.oauth/>
+                <x-auth.oauth />
             </div>
             <p class="flex-center text-subtitle-md font-medium gap-1">
                 Don't have an account yet?
-                <button class="text-primary" @click="toggleRegisterModal()">Register</button>
+                <button class="text-primary" @click="{{ $onRegister }}">Register</button>
             </p>
         </div>
     </div>

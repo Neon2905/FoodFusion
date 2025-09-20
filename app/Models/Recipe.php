@@ -88,4 +88,14 @@ class Recipe extends Model
     {
         return $this->hasOne(Nutrition::class);
     }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    public function tips()
+    {
+        return $this->hasMany(Tip::class);
+    }
 }
