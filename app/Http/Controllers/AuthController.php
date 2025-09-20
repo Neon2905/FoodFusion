@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
-use App\Models\Profile;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validate the request
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Attempt to log the user in
         if (!Auth::attempt(credentials: $credentials)) {
             return back()->withErrors([
                 'error' => 'The provided credentials do not match our records.',
             ]);
         }
 
-        // Authentication successful
         $user = User::where('email', $credentials['email'])->first();
         Auth::login($user, true);
         return redirect()->intended('/recipes');
@@ -48,7 +47,56 @@ class AuthController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        return redirect('/email/verify');
+        return back()->with('status', 'Registration successful! Please verify your email address.');
+    }
+
+    public function changePassword(Request $request)
+    {
+        // TODO: Review
+        $validated = $request->validate([
+            'current_password' => ['required'],
+            'new_password' => ['required', 'min:8', 'confirmed'],
+        ]);
+
+        $user = Auth::user();
+
+        if (!password_verify($validated['current_password'], $user->password)) {
+            return back()->withErrors([
+                'error' => 'The current password is incorrect.',
+            ]);
+        }
+
+        // $user->update([
+        //     'password' => bcrypt($validated['new_password']),
+        // ]);
+
+        return redirect()->back()->with('status', 'Password changed successfully.');
+    }
+
+    public function requestPasswordRecovery(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'We can\'t find a user with that email address.',
+            ]);
+        }
+
+        // Manually send the reset link
+        $token = app(abstract: 'auth.password.broker')->createToken($user);
+
+        // You can customize the email here if needed
+        // Mail::send('emails.password_reset', ['token' => $token, 'user' => $user], function ($message) use ($user) {
+        //     $message->to($user->email);
+        //     $message->subject('Reset Password Notification');
+        // });
+
+        return back()->with('status', "We have emailed your password reset link!\nToken: {$token}");
     }
 
     public function redirectToProvider($provider)
