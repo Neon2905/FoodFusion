@@ -4,7 +4,7 @@
     'onLogin' => 'toggleLoginModal()',
 ])
 
-<div class="modal flex-center" x-show="{{$show}}" x-transition.opacity.duration.300ms>
+<div class="modal flex-center" x-show="{{ $show }}" x-transition.opacity.duration.300ms>
     <div class="modal-card bg-background p-[20px] w-[380px]">
         <div class="flex justify-end">
             <button @click="{{ $onClose }}">

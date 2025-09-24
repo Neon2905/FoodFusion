@@ -24,6 +24,7 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'bio' => ['nullable', 'string', 'max:1000'],
+            'username' => ['required', 'string', 'max:50', 'unique:profiles,username'],
             'avatar' => ['nullable', 'image', 'max:2048'], // max 2MB
         ]);
 
@@ -31,6 +32,7 @@ class ProfileController extends Controller
 
         $profile = $user->profile ?? new Profile();
         $profile->name = $validated['name'];
+        $profile->username = $validated['username'];
         $profile->user_id = $user->id;
         $profile->bio = $validated['bio'] ?? '';
 

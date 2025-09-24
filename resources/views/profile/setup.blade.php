@@ -26,6 +26,12 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
+                    <label for="username" class="font-semibold text-subtitle-lg">Username</label>
+                    <input type="text" name="username" id="username" class="input-box"
+                        value="{{ old('username', auth()->user()->username) }}" required maxlength="50" autocomplete="username">
+                </div>
+
+                <div class="flex flex-col gap-2">
                     <label for="bio" class="font-semibold text-subtitle-lg">Bio</label>
                     <textarea name="bio" id="bio" class="input-box resize-y min-h-20" maxlength="1000" rows="4">{{ old('bio', optional(auth()->user()->profile)->bio) }}</textarea>
                 </div>

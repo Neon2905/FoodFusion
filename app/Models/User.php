@@ -62,10 +62,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         parent::boot();
 
-        static::created(function ($user) {
-            $user->profile()->create(
-                ['name' => explode('@', $user->email)[0]]
-            );
-        });
+        // static::created(function ($user) {
+        //     $user->profile()->create(
+        //         [
+        //             'name' => explode('@', $user->email)[0],
+        //             'username' => fake()->userName()
+        //         ]
+        //     );
+        // });
     }
 }
