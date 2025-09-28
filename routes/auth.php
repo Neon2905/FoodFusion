@@ -3,53 +3,83 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PasswordRecoveryController;
+use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VerificationController;
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login.form');
+Route::middleware(['guest'])->group(function () {
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login.form');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register.form');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register.form');
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+    Route::get('/login/apple', function () {
+        // TODO: Decorate this
+        // Restricted Apple login route until we get a proper setup. Current budget doesn't meet for it.
+        return response('Service Unavailable', 503);
+    });
+
+    Route::get('/oauth/{provider}', [AuthController::class, 'redirectToProvider'])
+        ->where('provider', 'facebook|apple|google')
+        ->name('oauth.redirect');
+
+    Route::get('/oauth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])
+        ->where('provider', 'facebook|apple|google')
+        ->name('oauth.callback');
+});
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/login/apple', function () {
-    // TODO: Decorate this
-    // Restricted Apple login route until we get a proper setup. Current budget doesn't meet for it.
-    return response('Service Unavailable', 503);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/setup', function () {
+        return view('profile.setup');
+    })->middleware(['profile.notset'])
+        ->name('profile.setup');
+
+    Route::post('/profile/setup', [ProfileController::class, 'setup'])
+        ->middleware('profile.notset')
+        ->name('profile.setup.submit');
+
+    // Auth::routes(['verify' => true]);
+
+    Route::get('/email/verify', [VerificationController::class, 'index'])
+        ->name('verification.notice');
+
+    Route::post('/email/verification-notification', [VerificationController::class, 'requestNotification'])
+        ->middleware(['throttle:6,1'])
+        ->name('verification.send');
+
+    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+        ->middleware(['throttle:6,1'])
+        ->withoutMiddleware('auth')
+        ->name('verification.verify');
 });
 
-Route::get('/login/{provider}', [AuthController::class, 'redirectToProvider'])
-    ->where('provider', 'facebook|apple|google')
-    ->name('oauth.redirect');
+Route::middleware(['auth', 'verified', 'throttle:6,1'])->group(function () {
+    Route::get('/recover-password', function () {
+        return view('auth.recover-password');
+    })->name('password.recover');
 
-Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])
-    ->where('provider', 'facebook|apple|google')
-    ->name('oauth.callback');
+    Route::post('/recover-password', [PasswordController::class, 'requestRecovery'])
+        ->name('password.recover');
 
-Route::get('/email/verify', [VerificationController::class, 'index'])
-    ->middleware('auth')
-    ->name('verification.notice');
+    Route::get('/recover-password/submit', [PasswordController::class, 'showRecoverySubmitForm'])
+        ->name('password.recover.submit');
 
-Route::post('/email/verification-notification', [VerificationController::class, 'requestNotification'])
-    ->middleware(['auth', 'throttle:6,1'])
-    ->name('verification.send');
+    Route::post('/recover-password/submit', [PasswordController::class, 'reset'])
+        ->name('password.recover.submit');
 
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-    ->middleware(['signed', 'throttle:6,1'])
-    ->name('verification.verify');
+    Route::get('/change-password', function () {
+        return view('auth.change-password');
+    })->name('password.change');
 
-Route::get('/recover-password', [PasswordRecoveryController::class, 'showRecoveryForm'])->name('password.recover');
-
-Route::post('/recover-password', [PasswordRecoveryController::class, 'requestRecovery'])->name('password.recover');
-
-Route::get('/reset-password', [PasswordRecoveryController::class, 'showResetForm'])->name('password.reset');
-
-Route::post('/reset-password', [PasswordRecoveryController::class, 'reset'])->name('password.update');
+    Route::post('/change-password', [PasswordController::class, 'changePassword'])
+        ->name('password.change');
+});

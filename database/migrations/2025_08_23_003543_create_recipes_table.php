@@ -29,7 +29,7 @@ return new class extends Migration {
             $table->string('meal_type')->nullable(); //TODO:
             $table->enum('difficulty', ['easy', 'medium', 'hard'])->default('easy');
 
-            $table->boolean('comments_enabled')->default(true);
+            // $table->boolean('comments_enabled')->default(true);
             $table->enum('visibility', ['public', 'unlisted', 'private'])->default('public');
             // $table->string('language', 20)->nullable();
 

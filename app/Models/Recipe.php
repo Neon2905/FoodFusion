@@ -28,14 +28,13 @@ class Recipe extends Model
         'cuisine',
         'meal_type',
         'difficulty',
-        'comments_enabled',
         'visibility',
         'rating',
         'analytics_views',
     ];
 
     protected $casts = [
-        'comments_enabled' => 'boolean',
+        // 'comments_enabled' => 'boolean',
         'analytics_views' => 'integer',
         'created_at' => 'datetime',
     ];

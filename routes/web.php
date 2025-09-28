@@ -1,46 +1,32 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\RecipeController;
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Auth;
-
 Route::get('/test', function () {
-
+    return view('components.recipe.review-submit');
 });
 
+Route::post('/test', function () {
+    dd(request()->all());
+})->name('test.post');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::prefix('recipes')->group(function () {
-    Route::get('/', [RecipeController::class, 'index']);
-    Route::get('/{slug}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::post('/recipes/{slug}/review', [RecipeController::class, 'submitReview'])
+    ->middleware(['auth.setup'])
+    ->name('review.submit');
+
+Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth', 'verified'])->name('recipes');
+Route::get('/recipes/{slug}', [RecipeController::class, 'show'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/profile', [ProfileController::class, 'show'])
-    ->middleware('auth')
-    ->name('profile.show');
-
-Route::get('/profile/setup', [ProfileController::class, 'setup'])
-    ->middleware('auth')
-    ->name('profile.setup');
-
-Route::post('/profile/setup', [ProfileController::class, 'setup_submit'])
-    ->middleware('auth')
-    ->name('profile.setup.submit');
-
-Route::get('/resources', function () {
-    return view('welcome');
-});
-
-Route::get('/about', function () {
-    return view('welcome');
-});
-
-/*
-    Auth Routes
- */
 require __DIR__ . '/auth.php';

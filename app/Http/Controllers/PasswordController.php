@@ -3,19 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\PasswordReset;
 
-// TODO: PLEASE REVIEW AND FIX THIS JUNK!!!!!!!
-class PasswordRecoveryController extends Controller
+class PasswordController extends Controller
 {
-    public function showRecoveryForm()
+    public function changePassword(Request $request)
     {
-        return view('auth.recover-password');
+        // TODO: Review
+        $validated = $request->validate([
+            'current_password' => ['required'],
+            'new_password' => ['required', 'min:8', 'confirmed'],
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        if (!password_verify($validated['current_password'], $user->password)) {
+            return back()->withErrors([
+                'error' => 'The current password is incorrect.',
+            ]);
+        }
+
+        $user->update([
+            'password' => bcrypt($validated['new_password']),
+        ]);
+
+        return back()->with('status', 'Password changed successfully.');
     }
 
     public function requestRecovery(Request $request)
@@ -43,7 +60,7 @@ class PasswordRecoveryController extends Controller
         }
     }
 
-    public function showResetForm(Request $request)
+    public function showRecoverySubmitForm(Request $request)
     {
         $token = $request->query('token');
         $email = $request->query('email');
@@ -52,7 +69,7 @@ class PasswordRecoveryController extends Controller
             abort(404);
         }
 
-        return view('auth.reset-password', ['token' => $token, 'email' => $email]);
+        return view('auth.recover-password.submit', ['token' => $token, 'email' => $email]);
     }
 
     public function reset(Request $request)

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +27,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
         Auth::login($user, true);
-        return redirect()->intended('/recipes');
+        return redirect()->intended('/');
     }
 
     public function register(Request $request)
@@ -50,97 +49,67 @@ class AuthController extends Controller
         return back()->with('status', 'Registration successful! Please verify your email address.');
     }
 
-    public function changePassword(Request $request)
+    public function redirectToProvider($provider, Request $request)
     {
-        // TODO: Review
-        $validated = $request->validate([
-            'current_password' => ['required'],
-            'new_password' => ['required', 'min:8', 'confirmed'],
-        ]);
-
-        $user = Auth::user();
-
-        if (!password_verify($validated['current_password'], $user->password)) {
-            return back()->withErrors([
-                'error' => 'The current password is incorrect.',
-            ]);
-        }
-
-        // $user->update([
-        //     'password' => bcrypt($validated['new_password']),
-        // ]);
-
-        return redirect()->back()->with('status', 'Password changed successfully.');
-    }
-
-    public function requestPasswordRecovery(Request $request)
-    {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return back()->withErrors([
-                'email' => 'We can\'t find a user with that email address.',
-            ]);
-        }
-
-        // Manually send the reset link
-        $token = app(abstract: 'auth.password.broker')->createToken($user);
-
-        // You can customize the email here if needed
-        // Mail::send('emails.password_reset', ['token' => $token, 'user' => $user], function ($message) use ($user) {
-        //     $message->to($user->email);
-        //     $message->subject('Reset Password Notification');
-        // });
-
-        return back()->with('status', "We have emailed your password reset link!\nToken: {$token}");
-    }
-
-    public function redirectToProvider($provider)
-    {
+        $action = $request->query('action', 'login');
+        session(['oauth_action' => $action]);
         return Socialite::driver($provider)->redirect();
     }
 
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback($provider, Request $request)
     {
         $socialUser = Socialite::driver($provider)->user();
+
+        $action = $request->session()->get('oauth_action');
 
         $user = User::where('provider', $provider)
             ->where('provider_id', $socialUser->getId())
             ->first();
 
-        if (!$user && $socialUser->getEmail()) {
-            $user = User::where('email', $socialUser->getEmail())->first();
-        }
+        if ($action === 'login') {
+            if (!$user) {
+                return back()->withErrors([
+                    'error' => 'No account is linked with your provided login method. Please sign up first.',
+                ]);
+            }
+            Auth::login($user, true);
+            return redirect()->intended('/');
+        } else if ($action === 'register' || $action === 'bind') {
+            if ($user && $user->provider_id === $socialUser->getId()) {
+                return back()->withErrors([
+                    'error' => 'An account is already linked with your provided login method. Please log in instead.',
+                ]);
+            }
 
-        if (!$user) {
-            $user = User::create([
-                'email' => $socialUser->getEmail(),
-                'email_verified_at' => now(),
-                'provider' => $provider,
-                'provider_id' => $socialUser->getId(),
-                'password' => bcrypt(bin2hex(random_bytes(10))), // random password
-            ]);
+            // Check if user exists by email (for binding)
+            $user = User::where('email', operator: $socialUser->getEmail())->first();
+            if ($user) {
+                $user->update([
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->getId(),
+                ]);
+            } else {
+                $user = User::create([
+                    'email' => $socialUser->getEmail(),
+                    'email_verified_at' => now(),
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->getId(),
+                    'password' => bcrypt(bin2hex(random_bytes(10))),
+                ]);
+                $user->profile()->create([
+                    'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
+                    'username' => 'user' . $user->id,
+                    'profile' => $socialUser->getAvatar(),
+                ]);
+            }
 
-            $user->profile->update([
-                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
-                'profile' => $socialUser->getAvatar(),
-            ]);
+            Auth::login($user, true);
+            return redirect()->intended('/');
         } else {
-            // TODO: Decide if this is necessary
-            // Update provider fields if missing
-            $user->update([
-                'provider' => $user->provider ?? $provider,
-                'provider_id' => $user->provider_id ?? $socialUser->getId(),
+            return back()->withErrors([
+                'error' => 'Invalid action specified.',
             ]);
         }
-
-        Auth::login($user, true);
-
-        return redirect()->intended('/');
     }
 
     public function logout(Request $request)

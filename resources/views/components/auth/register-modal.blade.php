@@ -60,7 +60,7 @@
                 <div class="text-heading-sm font-bold">
                     OR CONTINUE WITH
                 </div>
-                <x-auth.oauth />
+                <x-auth.oauth action="register" />
             </div>
             <div class="flex-center text-subtitle-md font-medium gap-1">
                 Already a member?

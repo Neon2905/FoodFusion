@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Recipe;
+use App\Models\Review;
+use Illuminate\Http\Request;
 
 class RecipeController extends Controller
 {
@@ -21,5 +23,23 @@ class RecipeController extends Controller
             ->firstOrFail();
 
         return view('recipes.detail', compact('recipe'));
+    }
+
+    public function submitReview(Request $request, $slug)
+    {
+        $recipe = Recipe::where('slug', $slug)->firstOrFail();
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'review' => 'required|string|max:1000',
+        ]);
+
+        $recipe->reviews()->create([
+            'profile_id' => $request->user()->profile->id,
+            'rating' => $request->input('rating'),
+            'review' => $request->input('review'),
+        ]);
+
+        return redirect()->route('recipes.show', ['slug' => $slug])->with('success', 'Review submitted successfully!');
     }
 }

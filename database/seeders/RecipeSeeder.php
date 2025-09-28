@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
 use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\RecipeStep;
@@ -20,99 +18,121 @@ class RecipeSeeder extends Seeder
      */
     public function run(): void
     {
+        fake()->addProvider(new \App\Faker\ImageFakerProvider(fake()));
+        $fakeTags = [
+            'vegan',
+            'gluten-free',
+            'spicy',
+            'quick',
+            'healthy',
+            'dessert',
+            'breakfast',
+            'dinner',
+            'snack',
+            'low-carb',
+            'high-protein',
+            'vegetarian',
+            'easy',
+            'family',
+            'holiday',
+            'comfort',
+            'classic',
+            'fresh',
+            'seasonal',
+            'grilled'
+        ];
+
+        $ingredients = [
+            'flour' => [1, 'cup'],
+            'eggs' => [2],
+            'sugar' => [0.5, 'cup'],
+            'salt' => [1, 'tbsp'],
+            'olive oil' => [1, 'tbsp'],
+            'milk' => [1, 'cup'],
+            'butter' => [2, 'tbsp'],
+            'baking powder' => [1, 'tsp'],
+            'vanilla extract' => [1, 'tsp'],
+            'chocolate chips' => [0.5, 'cup'],
+            'cheese' => [0.5, 'cup'],
+            'tomato' => [1],
+            'onion' => [1],
+            'garlic' => [2, 'cloves'],
+            'pepper' => [1, 'tsp'],
+            'spinach' => [1, 'cup'],
+            'chicken breast' => [1],
+            'lemon juice' => [1, 'tbsp'],
+            'parsley' => [2, 'tbsp'],
+            'mushrooms' => [0.5, 'cup'],
+        ];
+
         Recipe::factory()
             ->count(10)
             ->create()
-            ->each(function (Recipe $recipe) {
+            ->each(function (Recipe $recipe) use ($fakeTags, $ingredients) {
                 // Steps
+                $steps = [];
                 $stepsCount = fake()->numberBetween(5, 15);
                 for ($i = 1; $i <= $stepsCount; $i++) {
-                    RecipeStep::create([
+                    $steps[] = [
                         'recipe_id' => $recipe->id,
                         'step_order' => $i,
                         'title' => fake()->word(),
                         'instruction' => fake()->sentence(),
                         'duration' => fake()->numberBetween(1, 30),
-                    ]);
+                    ];
                 }
-
-                $fakeTags = [
-                    'vegan',
-                    'gluten-free',
-                    'spicy',
-                    'quick',
-                    'healthy',
-                    'dessert',
-                    'breakfast',
-                    'dinner',
-                    'snack',
-                    'low-carb',
-                    'high-protein',
-                    'vegetarian',
-                    'easy',
-                    'family',
-                    'holiday',
-                    'comfort',
-                    'classic',
-                    'fresh',
-                    'seasonal',
-                    'grilled'
-                ];
+                RecipeStep::insert($steps);
 
                 // Tags
-                for ($i = 1; $i <= fake()->numberBetween(1, 10); $i++) {
-                    $recipe->tags()->create([
+                $tags = [];
+                $tagCount = fake()->numberBetween(1, 10);
+                for ($i = 1; $i <= $tagCount; $i++) {
+                    $tags[] = [
+                        'recipe_id' => $recipe->id,
                         'name' => fake()->randomElement($fakeTags),
-                    ]);
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
                 }
+                $recipe->tags()->insert($tags);
 
                 // Tips
+                $tips = [];
                 $tipCount = fake()->numberBetween(1, 6);
                 for ($i = 1; $i <= $tipCount; $i++) {
-                    $recipe->tips()->create([
+                    $tips[] = [
+                        'recipe_id' => $recipe->id,
                         'content' => fake()->sentence(),
-                    ]);
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
                 }
+                $recipe->tips()->insert($tips);
 
                 // Ingredients
-                $ingredients = [
-                    'flour' => [1, 'cup'],
-                    'eggs' => [2],
-                    'sugar' => [1 / 2, 'cup'],
-                    'salt' => [1, 'tbsp'],
-                    'olive oil' => [1, 'tbsp'],
-                    'milk' => [1, 'cup'],
-                    'butter' => [2, 'tbsp'],
-                    'baking powder' => [1, 'tsp'],
-                    'vanilla extract' => [1, 'tsp'],
-                    'chocolate chips' => [1 / 2, 'cup'],
-                    'cheese' => [1 / 2, 'cup'],
-                    'tomato' => [1],
-                    'onion' => [1],
-                    'garlic' => [2, 'cloves'],
-                    'pepper' => [1, 'tsp'],
-                    'spinach' => [1, 'cup'],
-                    'chicken breast' => [1],
-                    'lemon juice' => [1, 'tbsp'],
-                    'parsley' => [2, 'tbsp'],
-                    'mushrooms' => [1 / 2, 'cup'],
-                ];
+                $ings = [];
                 foreach ($ingredients as $name => $ing) {
-                    Ingredient::create([
+                    $ings[] = [
                         'recipe_id' => $recipe->id,
                         'name' => $name,
                         'quantity' => $ing[0],
                         'unit' => $ing[1] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                Ingredient::insert($ings);
+
+                // Create Media Collection
+                $mediaCount = fake()->numberBetween(5, 15);
+                for ($j = 0; $j < $mediaCount; $j++) {
+                    Media::create([
+                        'recipe_id' => $recipe->id,
+                        'url' => fake()->imageUrl(category: 'food'),
+                        'type' => 'image',
+                        'alt' => $recipe->title . ' extra ' . ($j + 1),
                     ]);
                 }
-
-                // Media
-                Media::create([
-                    'recipe_id' => $recipe->id,
-                    'url' => $recipe->hero_url,
-                    'type' => 'image',
-                    'alt' => $recipe->title,
-                ]);
 
                 // Nutrition
                 Nutrition::create([
@@ -123,14 +143,16 @@ class RecipeSeeder extends Seeder
                     'protein' => fake()->randomFloat(2, 0, 80),
                 ]);
 
-                // Reviews (attach random profiles or author)
-                $profiles = Profile::inRandomOrder()->limit(5)->get();
+                $profiles = Profile::query()->inRandomOrder()->limit(random_int(1, 8))->get();
+                // Reviews
                 foreach ($profiles as $profile) {
                     Review::create([
                         'recipe_id' => $recipe->id,
                         'profile_id' => $profile->id,
                         'rating' => fake()->numberBetween(3, 5),
                         'review' => fake()->sentence(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ]);
                 }
             });

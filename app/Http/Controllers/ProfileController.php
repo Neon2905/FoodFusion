@@ -10,16 +10,10 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        // dd($user->profile ? $user->profile->getAttributes() : null);
         return view('profile.index', ['user' => $user, 'recipes' => $user->profile ? $user->profile->recipes : []]);
     }
 
-    public function setup()
-    {
-        return view('profile.setup');
-    }
-
-    public function setup_submit(Request $request)
+    public function setup(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
