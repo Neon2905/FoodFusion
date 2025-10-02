@@ -8,7 +8,7 @@
 <div class="modal-card px-6 flex gap-7 lg:max-w-3/4">
     {{-- header --}}
     <div class="flex-center flex-col gap-1">
-        <h1 class="">{{ $recipe->title }}</h1>
+        <h1 class="text-center">{{ $recipe->title }}</h1>
         <div class="flex-center flex-col">
             <h3>RECIPE BY {{ strtoupper($author->name) }}</h3>
             <h4 class="text-muted">{{ $recipe->created_at->diffForHumans() }}</h4>
