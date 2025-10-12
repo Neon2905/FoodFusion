@@ -39,7 +39,7 @@
     /* @media (prefers-color-scheme: dark) {
         --color-background: rgba(24, 24, 27, 1);
     } */
-    --color-on-background: #8a8a8a;
+    --color-on-background: #F9F9F9;
 
     --color-primary: rgba(239, 141, 37, 1);
     --color-secondary: rgba(205, 101, 101, 1);

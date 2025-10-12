@@ -183,13 +183,13 @@
                 </div>
             </form>
             <div class="flex-center w-full flex-col gap-3">
-                <div class="flex justify-end items-center w-full border-b border-on-background text-subtitle-md gap-1 pb-2">
+                <div class="flex justify-end items-center w-full border-b border-muted text-subtitle-md gap-1 pb-2">
                     Sort by
                     <x-icons.chevron-down class="ml-2" />
                 </div>
                 @foreach ($recipe->reviews as $review)
                     <div
-                        class="flex flex-col justify-start items-start px-2 pb-2 w-full gap-1 border-b border-on-background">
+                        class="flex flex-col justify-start items-start px-2 pb-2 w-full gap-1 border-b border</div>-muted">
                         {{-- Header --}}
                         <div class="flex gap-3">
                             <img class="size-10" src="{{ $review->profile_url }}" alt="{{ $review->name }}">

@@ -104,7 +104,7 @@
             <x-rating value="{{ $recipe->rating }}" />
         </div>
         @if ($userReview)
-            <div class="flex-center p-3 w-full justify-between border border-on-background rounded-lg"
+            <div class="flex-center p-3 w-full justify-between border border-muted rounded-lg"
                 x-data="{ isEditing: false }">
                 {{-- TODO: work on update feature --}}
                 <div class="flex flex-col w-full">
@@ -135,13 +135,13 @@
         @endif
         <div class="flex-center w-full flex-col gap-3">
             {{-- TODO: Work on sorting feature --}}
-            <div class="flex justify-end items-center w-full border-b border-on-background text-subtitle-md gap-1 pb-2">
+            <div class="flex justify-end items-center w-full border-b border-muted text-subtitle-md gap-1 pb-2">
                 Sort by
                 <x-icons.chevron-down class="ml-2" />
             </div>
             @foreach ($reviews as $i => $review)
                 <div x-show="{{ $i }} < showCount"
-                    class="flex flex-col justify-start items-start px-2 pb-2 w-full gap-1 border-b border-on-background">
+                    class="flex flex-col justify-start items-start px-2 pb-2 w-full gap-1 border-b border-muted">
                     {{-- Header --}}
                     <div class="flex gap-3">
                         <img class="size-10 rounded-full" src="{{ $review->reviewer->profile }}"

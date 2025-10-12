@@ -5,7 +5,7 @@ use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function () {
-    return view('components.media-uploader');
+    return view('recipes.create');
 });
 
 Route::post('/test', function () {
