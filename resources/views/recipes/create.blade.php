@@ -100,14 +100,14 @@
                     <p class="font-bold">
                         Title
                     </p>
-                    <input type="text" name="title" class="w-full text-body-lg border border-gray-300 rounded-md p-2"
+                    <input type="text" name="title" class="w-full text-body-lg border border-gray rounded-md p-2"
                         placeholder="Grandma's Apple Pie">
                 </div>
                 <div class="modal-card bg-on-background">
                     <p class="font-bold">
                         Description
                     </p>
-                    <textarea name="description" class="w-full text-body-lg border border-gray-300 rounded-md p-2"
+                    <textarea name="description" class="w-full text-body-lg border border-gray rounded-md p-2"
                         placeholder="A quick, cozy dessert.."></textarea>
                 </div>
                 <div class="modal-card bg-on-background">
@@ -118,16 +118,24 @@
                     <template x-for="(step, sidx) in steps" :key="sidx">
                         <div x-transition class="mb-3">
                             <div class="flex items-start gap-3">
-                                <div class="w-8 text-center font-bold text-gray-700">Step <span x-text="sidx+1"></span>
+                                <input type="text" name="title"
+                                    class="w-20 text-body-lg border border-gray rounded-md p-2" placeholder="Step 1">
+                                <textarea :name="`steps[${sidx}][content]`" x-model="step.content" rows="3"
+                                    class="w-full text-body-lg border border-gray rounded-md p-2" placeholder="Do something..."></textarea>
+                                <div class="flex-center">
+                                    <div class="flex flex-col gap-4 pt-4">
+                                        <button type="button" class="rounded-full size-min" @click="moveStepUp(sidx)"
+                                            title="Move up" style="background:var(--color-primary); color:white">
+                                            <x-bi-arrow-up-short class="size-5" />
+                                        </button>
+                                        <button type="button" class="rounded-full size-min" @click="moveStepDown(sidx)"
+                                            title="Move down" style="background:var(--color-primary); color:white">
+                                            <x-bi-arrow-down-short class="size-5" />
+                                        </button>
+                                    </div>
+                                    
                                 </div>
-                                <textarea :name="`steps[${sidx}][content]`" x-model="step.content" rows="3" class="input flex-1"
-                                    placeholder="Do something..."></textarea>
-                                <div class="flex flex-col gap-2">
-                                    <button type="button" class="button" @click="moveStepUp(sidx)" title="Move up"
-                                        style="background:var(--color-primary); color:white">▲</button>
-                                    <button type="button" class="button" @click="moveStepDown(sidx)" title="Move down"
-                                        style="background:var(--color-primary); color:white">▼</button>
-                                </div>
+
                             </div>
                             <div class="text-right mt-2">
                                 <button type="button" class="text-red-600" @click="removeStep(sidx)">Remove</button>
