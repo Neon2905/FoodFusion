@@ -22,7 +22,7 @@ Route::post('/recipes/{slug}/review', [RecipeController::class, 'submitReview'])
 
 Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth', 'verified'])->name('recipes');
 Route::get('/recipes/{slug}', [RecipeController::class, 'show'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.show');
-Route::post('/recipes', [RecipeController::class, 'store'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.create');
+Route::post('/recipes', [RecipeController::class, 'create'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.create');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
