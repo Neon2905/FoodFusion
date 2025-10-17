@@ -8,6 +8,10 @@ Route::get('/test', function () {
     return view('recipes.create');
 });
 
+Route::get('/test2', function () {
+    return view('components.experiment', ['recipe' => \App\Models\Recipe::first()]);
+});
+
 Route::post('/test', function () {
     dd(request()->all());
 })->name('test.post');
@@ -21,8 +25,8 @@ Route::post('/recipes/{slug}/review', [RecipeController::class, 'submitReview'])
     ->name('review.submit');
 
 Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth', 'verified'])->name('recipes');
-Route::get('/recipes/{slug}', [RecipeController::class, 'show'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.show');
-Route::post('/recipes', [RecipeController::class, 'create'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.create');
+Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.show');
+Route::post('/recipe', [RecipeController::class, 'create'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.create');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

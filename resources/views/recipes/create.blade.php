@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    {{-- TODO: Consider to abstract/extract alpineJS --}}
     <form action="{{ route('recipes.create') }}" method="POST" enctype="multipart/form-data" class="flex-col w-full"
         x-data="{
             title: '',
@@ -11,11 +12,16 @@
             tags: [],
             tips: [],
             tagInput: '',
-            imagePreviews: [], // array of data URLs
             addIngredient() { this.ingredients.push({ quantity: '', unit: '', name: '' }) },
-            removeIngredient(i) { this.ingredients.splice(i, 1) },
+            removeIngredient(i) {
+                if (this.ingredients.length <= 1) return;
+                this.ingredients.splice(i, 1)
+            },
             addStep() { this.steps.push({ title: '', content: '' }) },
-            removeStep(i) { this.steps.splice(i, 1) },
+            removeStep(i) {
+                if (this.steps.length <= 1) return;
+                this.steps.splice(i, 1)
+            },
             moveStepUp(i) {
                 if (i === 0) return;
                 const a = this.steps[i - 1];
@@ -31,56 +37,6 @@
                 if (!t) return;
                 if (!this.tags.includes(t)) this.tags.push(t);
                 this.tagInput = ''
-            },
-            selectedFiles: [], // [{ name, size, type, previewType, dataUrl }]
-            previewMedia(e) {
-                const fileList = e.target.files;
-                if (!fileList || fileList.length === 0) {
-                    this.selectedFiles = [];
-                    this.imagePreviews = [];
-                    return;
-                }
-
-                // reset
-                this.selectedFiles = [];
-                this.imagePreviews = [];
-
-                Array.from(fileList).forEach((file, idx) => {
-                    const item = { name: file.name, size: file.size, type: file.type };
-                    if (file.type.startsWith('image/')) item.previewType = 'image';
-                    else if (file.type.startsWith('video/')) item.previewType = 'video';
-                    else if (file.type.startsWith('audio/')) item.previewType = 'audio';
-                    else item.previewType = 'other';
-
-                    // create data URL for preview
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        item.dataUrl = ev.target.result;
-                        this.selectedFiles.push(item);
-                        this.imagePreviews.push(item.dataUrl);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            },
-            removeMedia(index) {
-                this.selectedFiles.splice(index, 1);
-                this.imagePreviews.splice(index, 1);
-                // also update the file input by rebuilding a DataTransfer (optional)
-                if (this.$refs && this.$refs.mediaInput) {
-                    try {
-                        const dt = new DataTransfer();
-                        // can't get actual File objects from dataUrls here, so clear input if any removed
-                        // simpler: clear the input entirely when removing any file to avoid mismatch
-                        this.$refs.mediaInput.value = null;
-                    } catch (e) {
-                        this.$refs.mediaInput.value = null;
-                    }
-                }
-            },
-            clearMedia() {
-                this.selectedFiles = [];
-                this.imagePreviews = [];
-                if (this.$refs && this.$refs.mediaInput) this.$refs.mediaInput.value = null;
             },
             nutritionLabels: { calories: 'Calories', fat: 'Fat', carbs: 'Carbs', protein: 'Protein', fiber: 'Fiber', sugar: 'Sugar' },
             nutritions: { calories: '', fat: '', carbs: '', protein: '', fiber: '', sugar: '' },
@@ -108,12 +64,22 @@
                     <input type="text" name="title" class="w-full input-box" placeholder="Grandma's Apple Pie"
                         x-model="title">
                 </div>
+
+                {{-- media uploader --}}
+                <div class="modal-card bg-on-background">
+                    <p class="font-bold">Photos & Videos</p>
+                    <x-media-uploader name="media" :multiple="true" label="Upload media"
+                        @media-updated="selectedFiles = $event.detail; imagePreviews = selectedFiles.map(f => f.url)" />
+
+                </div>
                 <div class="modal-card bg-on-background">
                     <p class="font-bold">
                         Description
                     </p>
                     <textarea name="description" class="w-full input-box" placeholder="A quick, cozy dessert.."></textarea>
                 </div>
+
+
 
                 {{-- ingredients --}}
                 <div class="modal-card bg-on-background">
@@ -134,7 +100,7 @@
                                     class="w-20 input-box" placeholder="cup">
                                 <input type="text" :name="`ingredients[${index}][name]`" x-model="ingredient.name"
                                     class="w-full input-box" placeholder="All-purpose flour">
-                                <div class="flex-center pt-3">
+                                <div x-show="ingredients.length > 1" class="flex-center pt-3">
                                     <button type="button" class="clickable" @click="removeIngredient(index)"
                                         title="Remove ingredient">
                                         <x-css-trash class="text-error" />
@@ -176,7 +142,8 @@
                                             <x-bi-arrow-down-short class="size-5" />
                                         </button>
                                     </div>
-                                    <button type="button" class="clickable" @click="removeStep(index)" title="Remove step">
+                                    <button x-show="steps.length > 1" type="button" class="clickable"
+                                        @click="removeStep(index)" title="Remove step">
                                         <x-css-trash class="text-error" />
                                     </button>
                                 </div>
