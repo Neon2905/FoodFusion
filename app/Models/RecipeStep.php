@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class RecipeStep extends Model
 {
     //
+    protected $guarded = [];
 }

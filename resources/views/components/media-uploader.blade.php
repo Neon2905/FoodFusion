@@ -1,177 +1,303 @@
-@props(['name' => 'media', 'multiple' => true, 'label' => 'Media'])
+{{-- TODO: Size issue when media is has many --}}
 
-<div x-data="mediaUploader({{ $attributes->has('initial') ? $attributes->get('initial') : 'null' }})" x-cloak class="space-y-3">
-    <label class="block mb-2 font-semibold">{{ $label }}</label>
+<div {{ $attributes->merge(['class' => 'flex-col w-full']) }} x-data="mediaUploader()"
+    x-on:paste.window="handlePaste($event)">
+    <!-- empty placeholder -->
+    <div x-show="!items.length" class="flex flex-col w-full gap-2 min-h-59 items-center justify-center text-muted">
+        <p class="font-bold">No media selected</p>
+        <label for="mediaInput" class="px-4 py-2 border rounded cursor-pointer">Choose files</label>
+        <!-- real input lives inside the form so it submits naturally -->
+        <input id="mediaInput" x-ref="mediaInput" type="file" name="media[]" multiple accept="image/*,video/*"
+            class="hidden" x-on:change="handleFiles($event)" />
+    </div>
 
-    <div class="modal-card p-3">
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-3">
-                <button type="button" class="button" @click.prevent="$refs.fileInput.click()"
-                    style="background:var(--color-primary); color:white">Select files</button>
-                <button type="button" class="button" @click.prevent="clearAll()">Clear all</button>
-                <div class="text-sm text-muted" x-show="items.length">
-                    <span x-text="items.length"></span> file(s) selected
-                </div>
-            </div>
-
-            {{-- Hidden native input --}}
-            <input x-ref="fileInput" type="file"
-                :name="'{{ $name }}' + ({{ $multiple ? 'true' : 'false' }} ? '[]' : '')"
-                {{ $multiple ? 'multiple' : '' }} accept="image/*,video/*,audio/*,.heic,.heif,.webp" class="hidden"
-                @change="handleFiles($event)">
-
-            {{-- Preview area: main + thumbs similar to media-container --}}
-            <div class="rounded overflow-hidden bg-black mb-3" x-show="items.length">
-                <template x-if="current && current.type === 'image'">
-                    <img :src="current.url" alt="media" class="w-full object-cover" />
-                </template>
-                <template x-if="current && current.type === 'video'">
-                    <video x-ref="mainVideo" :src="current.url" controls playsinline
-                        class="w-full max-h-[520px] bg-black"></video>
-                </template>
-            </div>
-
-            <div class="relative max-w-full" x-show="items.length">
-                <div x-ref="thumbContainer"
-                    class="thumbs flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-2 max-w-full">
-                    <template x-for="(m, i) in items" :key="i">
-                        <button @click.prevent="select(i)" type="button"
-                            class="thumb flex-shrink-0 w-20 h-14 rounded overflow-hidden border p-0 bg-white transition transform duration-150 ease-in-out focus:outline-none"
-                            :class="selected === i ? 'ring-2 ring-indigo-500 scale-105' : 'opacity-95'">
-                            <template x-if="m.type === 'video'">
-                                <div class="relative w-full h-full bg-black">
-                                    <video muted class="object-cover w-full h-full">
-                                        <source :src="m.url">
-                                    </video>
-                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-white opacity-90" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M14.752 11.168l-6.545 3.773A1 1 0 017 13.999V9.001a1 1 0 011.207-.966l6.545 1.133a1 1 0 01.0.0z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </template>
-                            <template x-if="m.type === 'image'">
-                                <img class="w-full h-full object-cover" :src="m.url" alt="thumb">
-                            </template>
-                        </button>
+    <!-- large preview -->
+    <div class="relative rounded overflow-hidden bg-black mb-3 w-full" x-show="items.length">
+        <template x-if="items.length">
+            <div class="w-full bg-gray-100" style="position:relative;padding-top:56.25%;">
+                <div style="position:absolute;inset:0;" class="flex items-center justify-center">
+                    <template x-if="currentItem && currentItem.type === 'image'">
+                        <img :src="currentItem.url" class="w-full h-full object-cover"
+                            :style="'transform: rotate(' + (currentItem.rotation || 0) + 'deg)'" />
+                    </template>
+                    <template x-if="currentItem && currentItem.type === 'video'">
+                        <video :src="currentItem.url" controls class="w-full h-full bg-black object-cover"
+                            :style="'transform: rotate(' + (currentItem.rotation || 0) + 'deg)'"></video>
                     </template>
                 </div>
             </div>
+        </template>
 
-            {{-- list with remove/rotate/reorder controls --}}
-            <template x-if="items.length">
-                <div class="grid grid-cols-1 gap-3 mt-2">
-                    <template x-for="(f, i) in items" :key="i">
-                        <div class="flex gap-3 items-start p-2 border rounded-md">
-                            <div class="w-28 h-20 overflow-hidden rounded-md bg-gray flex-center">
-                                <template x-if="f.type === 'image'">
-                                    <img :src="f.url" class="w-full h-full object-cover"
-                                        :style="'transform: rotate(' + (f.rotation || 0) + 'deg)'" />
-                                </template>
-                                <template x-if="f.type === 'video'">
-                                    <video :src="f.url" class="w-full h-full object-cover" muted
-                                        playsinline></video>
-                                </template>
-                                <template x-if="f.type === 'other'">
-                                    <div class="text-sm">File</div>
-                                </template>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-medium" x-text="f.name"></div>
-                                <div class="text-sm text-muted" x-text="(f.size/1024).toFixed(1) + ' KB'"></div>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <div class="flex flex-col gap-2 mb-1">
-                                    <button type="button" class="button" @click.prevent="moveItem(i, -1)"
-                                        title="Move left" style="background:transparent">←</button>
-                                    <button type="button" class="button" @click.prevent="moveItem(i, 1)"
-                                        title="Move right" style="background:transparent">→</button>
-                                </div>
-                                <button type="button" class="button" @click.prevent="rotateItem(i)" title="Rotate"
-                                    style="background:transparent">⤾</button>
-                                <button type="button" class="button" @click.prevent="removeFile(i)"
-                                    style="background:transparent; color:var(--color-primary)">Remove</button>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </template>
+        <div class="absolute top-3 right-3 flex flex-col gap-2 items-center justify-center">
+            <button type="button" @click.prevent="$refs.mediaInput.click()" class="button bg-gray">
+                <x-css-add class="text-accent" />
+            </button>
+
+            <button type="button" x-show="items.length" @click.prevent="removeItem(currentIndex)"
+                class="button bg-gray">
+                <x-css-trash class="text-error" />
+            </button>
         </div>
     </div>
 
-    <script>
-        function mediaUploader(initial) {
-            return {
-                items: initial ? JSON.parse(initial) : [],
-                selected: 0,
-                get current() {
-                    return this.items[this.selected] ?? null
-                },
-                handleFiles(e) {
-                    const fileList = e.target.files;
-                    if (!fileList || fileList.length === 0) return;
+    <!-- horizontal thumbnails -->
+    <div class="thumbs flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-2">
+        <template x-for="(item, idx) in items" :key="item.id">
+            <div class="thumb flex-shrink-0 w-20 h-14 rounded overflow-hidden border p-0 bg-white transition transform duration-150 ease-in-out focus:outline-none"
+                :class="{
+                    'ring-2 ring-primary rounded-md': idx === currentIndex,
+                    'rounded-md': idx !==
+                        currentIndex
+                }"
+                draggable="true" @dragstart="onDragStart($event, idx)" @dragover.prevent @drop="onDrop($event, idx)"
+                @click="selectItem(idx)">
+                <template x-if="item.type === 'image'">
+                    <img :src="item.url" class="w-full h-full object-cover"
+                        :style="'transform: rotate(' + (item.rotation || 0) + 'deg)'" />
+                </template>
+                <template x-if="item.type === 'video'">
+                    <video :src="item.url" class="w-full h-full rounded-md border object-cover"></video>
+                </template>
+            </div>
+        </template>
+    </div>
 
-                    Array.from(fileList).forEach((file) => {
-                        const f = { name: file.name, size: file.size, type: file.type, file: file, rotation: 0 };
-                        if (file.type.startsWith('image/')) f.type = 'image';
-                        else if (file.type.startsWith('video/')) f.type = 'video';
-                        else f.type = 'other';
+    <!-- hidden input to carry metadata (rotation/order) to server -->
+    <input type="hidden" name="media_meta"
+        :value="JSON.stringify(items.map(i => ({
+            name: i.file ? i.file.name : i.name,
+            size: i.file ? i.file.size : i
+                .size,
+            type: i.type,
+            rotation: i.rotation || 0,
+            order: i.order ?? null
+        })))" />
+</div>
 
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            f.url = ev.target.result;
-                            this.items.push(f);
-                            this.rebuildFileInput();
-                            this.$dispatch('media-updated', this.items.map(i => ({ name: i.name, size: i.size, type: i.type, url: i.url, rotation: i.rotation })));
-                        };
-                        reader.readAsDataURL(file);
+<script>
+    function mediaUploader() {
+        return {
+            items: [],
+            currentIndex: 0,
+            dragFrom: null,
+            get currentItem() {
+                return this.items[this.currentIndex] ?? null;
+            },
+            handleFiles(e) {
+                const files = Array.from(e.target.files || []);
+                if (!files.length) return;
+                const startIndex = this.items.length;
+                files.forEach(f => {
+                    const id = Math.random().toString(36).substr(2, 9);
+                    const url = URL.createObjectURL(f);
+                    const type = f.type.startsWith('image') ? 'image' : (f.type.startsWith('video') ? 'video' :
+                        'unknown');
+                    this.items.push({
+                        id,
+                        file: f,
+                        name: f.name,
+                        size: f.size,
+                        url,
+                        type,
+                        rotation: 0,
+                        order: this.items.length
                     });
-                },
-                select(i) {
-                    this.selected = i;
-                    this.$nextTick(() => {
-                        try { this.$refs.mainVideo && this.$refs.mainVideo.play().catch(()=>{}); } catch(e){}
-                    });
-                },
-                rebuildFileInput() {
-                    if (!(this.$refs && this.$refs.fileInput)) return;
-                    try {
-                        const dt = new DataTransfer();
-                        this.items.forEach((it) => {
-                            if (it.file) dt.items.add(it.file);
-                        });
-                        this.$refs.fileInput.files = dt.files;
-                    } catch (e) {
-                        // ignore if DataTransfer not supported
+                });
+                // set currentIndex to first of newly added (or last)
+                this.currentIndex = Math.min(startIndex, this.items.length - 1);
+                this.dispatchUpdate();
+                this.rebuildFileList();
+            },
+
+            // paste handler kept from previous suggestion (optional)
+            async handlePaste(e) {
+                try {
+                    const clipboard = e.clipboardData || window.clipboardData;
+                    if (!clipboard) return;
+
+                    const items = Array.from(clipboard.items || []);
+                    const filesFromItems = [];
+
+                    for (const it of items) {
+                        if (!it) continue;
+                        if (it.kind === 'file' && it.type && it.type.startsWith('image')) {
+                            const file = it.getAsFile();
+                            if (file) filesFromItems.push(file);
+                        }
                     }
-                },
-                moveItem(i, dir) {
-                    const j = i + dir;
-                    if (j < 0 || j >= this.items.length) return;
-                    const temp = this.items[j];
-                    this.items.splice(j, 1, this.items[i]);
-                    this.items.splice(i, 1, temp);
-                    this.rebuildFileInput();
-                    this.$dispatch('media-updated', this.items.map(i => ({ name: i.name, size: i.size, type: i.type, url: i.url, rotation: i.rotation })));
-                },
-                rotateItem(i) {
-                    this.items[i].rotation = ((this.items[i].rotation || 0) + 90) % 360;
-                    this.$dispatch('media-updated', this.items.map(i => ({ name: i.name, size: i.size, type: i.type, url: i.url, rotation: i.rotation })));
-                },
-                removeFile(i) {
-                    this.items.splice(i, 1);
-                    this.rebuildFileInput();
-                    this.$dispatch('media-updated', this.items.map(i => ({ name: i.name, size: i.size, type: i.type, url: i.url, rotation: i.rotation })));
-                },
-                clearAll() {
-                    this.items = [];
-                    this.selected = 0;
-                    if (this.$refs && this.$refs.fileInput) this.$refs.fileInput.value = null;
-                    this.$dispatch('media-updated', this.items.map(i => ({ name: i.name, size: i.size, type: i.type, url: i.url, rotation: i.rotation })));
+
+                    if (filesFromItems.length === 0 && clipboard.files && clipboard.files.length) {
+                        Array.from(clipboard.files).forEach(f => {
+                            if (f.type && f.type.startsWith('image')) filesFromItems.push(f);
+                        });
+                    }
+
+                    if (filesFromItems.length === 0) {
+                        const html = clipboard.getData && clipboard.getData('text/html');
+                        const text = clipboard.getData && clipboard.getData('text/plain');
+                        const dataSource = html || text;
+                        if (dataSource) {
+                            const m = dataSource.match(/src=["'](data:[^"']+)["']/) || dataSource.match(
+                                /(data:image\/[a-zA-Z0-9+;=,-]+base64,[^"\s<]+)/);
+                            if (m && m[1]) {
+                                const dataUrl = m[1];
+                                const res = await fetch(dataUrl);
+                                const blob = await res.blob();
+                                const file = new File([blob],
+                                    `pasted-${Date.now()}.${blob.type.split('/')[1] || 'png'}`, {
+                                        type: blob.type
+                                    });
+                                filesFromItems.push(file);
+                            }
+                        }
+                    }
+
+                    if (filesFromItems.length === 0) return;
+
+                    const startIndex = this.items.length;
+                    filesFromItems.forEach(f => {
+                        const id = Math.random().toString(36).substr(2, 9);
+                        const url = URL.createObjectURL(f);
+                        const type = f.type.startsWith('image') ? 'image' : (f.type.startsWith('video') ?
+                            'video' : 'unknown');
+                        this.items.push({
+                            id,
+                            file: f,
+                            name: f.name || `pasted-${Date.now()}`,
+                            size: f.size || 0,
+                            url,
+                            type,
+                            rotation: 0,
+                            order: this.items.length
+                        });
+                    });
+                    this.currentIndex = Math.min(startIndex, this.items.length - 1);
+                    this.dispatchUpdate();
+                    this.rebuildFileList();
+                } catch (err) {
+                    console.warn('Error handling paste:', err);
                 }
+            },
+
+            dispatchUpdate() {
+                try {
+                    this.$dispatch('media-updated', this.items.map(i => ({
+                        id: i.id,
+                        url: i.url,
+                        type: i.type
+                    })));
+                } catch (err) {}
+            },
+            clearAll() {
+                this.items.forEach(i => {
+                    try {
+                        URL.revokeObjectURL(i.url);
+                    } catch (e) {}
+                });
+                this.items = [];
+                this.currentIndex = 0;
+                if (this.$refs && this.$refs.mediaInput) this.$refs.mediaInput.value = null;
+                this.dispatchUpdate();
+            },
+            removeItem(idx) {
+                if (idx == null || idx < 0 || idx >= this.items.length) return;
+                const it = this.items[idx];
+                try {
+                    URL.revokeObjectURL(it.url);
+                } catch (e) {}
+                this.items.splice(idx, 1);
+                // reindex order
+                this.items.forEach((it, i) => it.order = i);
+                // adjust currentIndex
+                if (this.items.length === 0) {
+                    this.currentIndex = 0;
+                } else if (this.currentIndex >= this.items.length) {
+                    this.currentIndex = this.items.length - 1;
+                } else if (idx < this.currentIndex) {
+                    this.currentIndex = Math.max(0, this.currentIndex - 1);
+                }
+                this.dispatchUpdate();
+                this.rebuildFileList();
+            },
+            moveItem(idx, dir) {
+                const to = idx + dir;
+                if (to < 0 || to >= this.items.length) return;
+                const tmp = this.items[to];
+                this.items.splice(to, 1, this.items[idx]);
+                this.items.splice(idx, 1, tmp);
+                this.items.forEach((it, i) => it.order = i);
+                this.dispatchUpdate();
+                this.rebuildFileList();
+                // if current item was involved, update currentIndex appropriately
+                if (this.currentIndex === idx) this.currentIndex = to;
+                else if (this.currentIndex === to) this.currentIndex = idx;
+            },
+            rotateItem(idx) {
+                if (!this.items[idx]) return;
+                this.items[idx].rotation = (this.items[idx].rotation || 0) + 90;
+                if (this.items[idx].rotation >= 360) this.items[idx].rotation = 0;
+                this.dispatchUpdate();
+            },
+
+            // Drag handlers for thumbnail reorder
+            onDragStart(e, idx) {
+                this.dragFrom = idx;
+                try {
+                    e.dataTransfer.setData('text/plain', idx);
+                } catch (err) {}
+                // hint
+                e.dataTransfer.effectAllowed = 'move';
+            },
+            onDrop(e, idx) {
+                let from = this.dragFrom;
+                if (from == null) {
+                    try {
+                        from = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    } catch (err) {}
+                }
+                if (from == null || isNaN(from)) return;
+                this.reorder(from, idx);
+                this.dragFrom = null;
+            },
+            reorder(from, to) {
+                if (from === to) return;
+                const item = this.items.splice(from, 1)[0];
+                this.items.splice(to, 0, item);
+                this.items.forEach((it, i) => it.order = i);
+                // update currentIndex so selection follows the moved item
+                if (this.currentIndex === from) {
+                    this.currentIndex = to;
+                } else if (from < this.currentIndex && to >= this.currentIndex) {
+                    this.currentIndex = this.currentIndex - 1;
+                } else if (from > this.currentIndex && to <= this.currentIndex) {
+                    this.currentIndex = this.currentIndex + 1;
+                }
+                this.dispatchUpdate();
+                this.rebuildFileList();
+            },
+
+            selectItem(idx) {
+                if (idx == null || idx < 0 || idx >= this.items.length) return;
+                this.currentIndex = idx;
+            },
+
+            rebuildFileList() {
+                try {
+                    const dt = new DataTransfer();
+                    this.items.forEach(it => {
+                        if (it.file) dt.items.add(it.file);
+                    });
+                    if (this.$refs && this.$refs.mediaInput) this.$refs.mediaInput.files = dt.files;
+                } catch (err) {
+                    console.warn('DataTransfer not available; media order may not be preserved in native file input');
+                }
+            },
+            async prepareAndSubmit(e) {
+                this.rebuildFileList();
+                const form = e.target.closest('form');
+                if (!form) return;
+                setTimeout(() => form.submit(), 50);
             }
         }
-    </script>
-</div>
+    }
+</script>

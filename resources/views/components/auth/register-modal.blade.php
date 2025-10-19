@@ -5,7 +5,7 @@
 ])
 
 <div class="modal flex-center" x-show="{{ $show }}" x-transition.opacity.duration.300ms>
-    <div class="modal-card bg-background p-[20px] w-[380px]">
+    <div class="card bg-background p-[20px] w-[380px]">
         <div class="flex justify-end">
             <button @click="{{ $onClose }}">
                 <x-css-close class="h-[24px] w-[24px] fill-gray-400 hover:fill-gray-800" />

@@ -104,8 +104,8 @@
         @apply fixed w-full h-full inset-0 z-50 bg-white/10 backdrop-filter backdrop-blur-[1.5px] border border-white/20 saturate-[150%] contrast-[80%];
     }
 
-    .modal-card {
-        @apply flex flex-col gap-[10px] bg-background p-[20px] rounded-2xl border border-navbar-gray drop-shadow-[0px_4px_4px_rgba(0,0,0,0.25)];
+    .card {
+        @apply flex flex-col gap-[10px] bg-on-background p-[20px] rounded-2xl border border-navbar-gray drop-shadow-[0px_4px_4px_rgba(0,0,0,0.25)];
     }
 
     .nav-button {

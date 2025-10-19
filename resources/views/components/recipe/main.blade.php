@@ -3,9 +3,16 @@
 @php
     $userReview = $recipe->reviews->firstWhere('profile_id', auth()->user()->profile->id);
     $reviews = $recipe->reviews->filter(fn($review) => $review->profile_id !== auth()->user()->profile->id);
+
+    $difficultyClassMap = [
+        'easy' => 'accent',
+        'medium' => 'warning',
+        'hard' => 'error',
+    ];
+    $difficultyClass = $difficultyClassMap[strtolower($recipe->difficulty ?? '')] ?? 'black';
 @endphp
 
-<div class="modal-card px-6 flex gap-7 lg:max-w-3/4">
+<div class="card px-6 flex gap-7 lg:max-w-3/4">
     {{-- header --}}
     <div class="flex-center flex-col gap-1">
         <h1 class="text-center">{{ $recipe->title }}</h1>
@@ -15,7 +22,7 @@
         </div>
         <div class="flex-center flex-col mt-2 gap-1">
             <x-rating :value="$recipe->rating" class="w-40" />
-            {{-- TODO: optimize this count fun --}}
+            {{-- TODO: optimize this count function --}}
             <h4 class="text-muted">{{ $reviews->count() }} Reviews</h4>
         </div>
     </div>
@@ -27,12 +34,21 @@
             <div class="flex-center flex-col items-start h-25 gap-3 text-left">
                 <h4 class="w-full">
                     <span class="font-normal">Ready In:</span>
-                    {{-- TODO:abstract this. --}}
-                    {{ floor($recipe->total_time / 60) > 0 ? floor($recipe->total_time / 60) . ' hr ' : '' }}{{ $recipe->total_time % 60 > 0 ? $recipe->total_time % 60 . ' mins' : '' }}
+                    @if ($recipe->prep_time)
+                        {{-- TODO:abstract this. --}}
+                        {{ floor($recipe->total_time / 60) > 0 ? floor($recipe->total_time / 60) . ' hr ' : '' }}{{ $recipe->total_time % 60 > 0 ? $recipe->total_time % 60 . ' mins' : '' }}
+                    @else
+                        Not Specified
+                    @endif
+
                 </h4>
                 <h4 class="w-full">
                     <span class="font-normal">Prep Time:</span>
-                    {{ $recipe->prep_time }} mins
+                    @if ($recipe->prep_time)
+                        {{ $recipe->prep_time }} mins
+                    @else
+                        Not Specified
+                    @endif
                 </h4>
             </div>
         </div>
@@ -40,7 +56,7 @@
             <div class="flex-center flex-col items-start h-25 gap-3 text-left">
                 <h4 class="w-full">
                     <span class="font-normal">Level:</span>
-                    <span class="text-accent">Easy</span>
+                    <span class="text-{{ $difficultyClass }}">{{ ucfirst($recipe->difficulty) }}</span>
                 </h4>
                 <h4 class="w-full">
                     <span class="font-normal">Ingredients:</span>
@@ -51,16 +67,12 @@
         <div class="flex flex-center flex-1 h-full">
             <div class="flex-center flex-col items-start h-25 gap-3 text-left">
                 <h4 class="w-full">
-                    <span class="font-normal">Cuisine:</span>
-                    {{ $recipe->cuisine }}
-                </h4>
-                <h4 class="w-full">
                     <span class="font-normal">Meal:</span>
-                    {{ $recipe->meal }}
+                    {{ $recipe->meal_type }}
                 </h4>
                 <h4 class="w-full">
                     <span class="font-normal">Yield:</span>
-                    {{ $recipe->yield }} servings
+                    {{ $recipe->servings }} servings
                 </h4>
             </div>
         </div>
@@ -77,8 +89,8 @@
         <ol class="list-decimal list-inside space-y-2 px-2 text-body-lg font-semibold">
             @foreach ($recipe->steps as $instruction)
                 <li>
-                    {{ ucfirst($instruction->title) }}: <span
-                        class="font-medium">{{ ucfirst($instruction->instruction) }}</span>
+                    {{ ucfirst($instruction->title ? $instruction->title : 'Step ' . $instruction->step_order) }}:
+                    <span class="font-medium">{{ ucfirst($instruction->instruction) }}</span>
                 </li>
             @endforeach
         </ol>
@@ -104,8 +116,7 @@
             <x-rating value="{{ $recipe->rating }}" />
         </div>
         @if ($userReview)
-            <div class="flex-center p-3 w-full justify-between border border-muted rounded-lg"
-                x-data="{ isEditing: false }">
+            <div class="flex-center p-3 w-full justify-between border border-muted rounded-lg" x-data="{ isEditing: false }">
                 {{-- TODO: work on update feature --}}
                 <div class="flex flex-col w-full">
                     {{-- Header --}}

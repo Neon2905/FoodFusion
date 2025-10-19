@@ -27,9 +27,9 @@
 
     $items = $raw->map($normalize)->filter(fn($i) => !empty($i['url']))->values()->all();
 
-    if (empty($items) && $hero) {
-        $items = [['url' => $hero, 'type' => preg_match('/\.(mp4|webm|ogg)(\?.*)?$/i', $hero) ? 'video' : 'image']];
-    }
+    // if (empty($items) && $hero) {
+    //     $items = [['url' => $hero, 'type' => preg_match('/\.(mp4|webm|ogg)(\?.*)?$/i', $hero) ? 'video' : 'image']];
+    // }
 @endphp
 
 <div class="flex-col {{ $class }}" x-data="{
@@ -72,21 +72,23 @@
             if (t && t.scrollIntoView) t.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
         });
     }
-}" x-init="init()">
+}">
     {{-- Main Media --}}
-    <div class="rounded overflow-hidden bg-black mb-3">
-        <template x-if="current() && current().type === 'image'">
-            <img x-bind:src="current() ? current().url : ''" alt="media" class="w-full object-cover" />
-        </template>
+    <div class="rounded overflow-hidden bg-black mb-3 w-full" style="position:relative;padding-top:56.25%;">
+        <div style="position:absolute;inset:0;" class="flex items-center justify-center">
+            <template x-if="current() && current().type === 'image'">
+                <img x-bind:src="current() ? current().url : ''" alt="media" class="w-full h-full object-cover" />
+            </template>
 
-        <template x-if="current() && current().type === 'video'">
-            <video x-ref="mainVideo" x-bind:src="current() ? current().url : ''" controls playsinline
-                class="w-full max-h-[520px] bg-black"></video>
-        </template>
+            <template x-if="current() && current().type === 'video'">
+                <video x-ref="mainVideo" x-bind:src="current() ? current().url : ''" controls playsinline
+                    class="w-full h-full bg-black object-cover"></video>
+            </template>
 
-        <template x-if="!current()">
-            <div class="w-full h-64 flex items-center justify-center text-gray-400">No media</div>
-        </template>
+            <template x-if="!current()">
+                <div class="w-full h-full flex items-center justify-center text-gray-400">No media</div>
+            </template>
+        </div>
     </div>
 
     {{-- Selector bar (fills parent's width) --}}

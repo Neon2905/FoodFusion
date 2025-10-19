@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="flex-center w-full pt-20">
-        <div class="modal-card flex-center w-auto flex-col p-10 gap-2">
+        <div class="card flex-center w-auto flex-col p-10 gap-2">
             <h1>Reset Your Password</h1>
             <p class="text-center">
                 Enter your new password below.

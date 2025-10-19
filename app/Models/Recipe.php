@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\RecipeStep;
 use App\Models\Ingredient;
 use App\Models\Nutrition;
+use App\Models\Media;
 use Illuminate\Support\Str;
 
 
@@ -25,7 +26,6 @@ class Recipe extends Model
         'cook_time',
         'total_time',
         'servings',
-        'cuisine',
         'meal_type',
         'difficulty',
         'visibility',

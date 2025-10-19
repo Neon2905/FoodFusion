@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="flex-center flex-col w-full min-h-[70vh]">
-        <div class="modal-card w-full max-w-xl px-8 py-10 flex flex-col gap-6">
+        <div class="card w-full max-w-xl px-8 py-10 flex flex-col gap-6">
             <h2 class="text-heading-lg flex-center mb-2">Set Up Your Profile</h2>
 
             @if ($errors->any())

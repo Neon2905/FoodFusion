@@ -31,7 +31,6 @@ class RecipeFactory extends Factory
             'cook_time' => $cook,
             'total_time' => $prep + $cook,
             'servings' => $this->faker->numberBetween(1, 8),
-            'cuisine' => $this->faker->randomElement(['Italian', 'Malaysian', 'American', 'Mexican', 'Indian']),
             'meal_type' => $this->faker->randomElement(['Lunch', 'Dinner', 'Breakfast']),
             'difficulty' => $this->faker->randomElement(['easy', 'medium', 'hard']),
             'visibility' => 'public',

@@ -5,12 +5,11 @@
         @auth
             <img class="rounded rounded-full size-13" src="{{ auth()->user()->profile->profile }}" alt="">
         @endauth
-        <textarea name="review"
+        <textarea name="review" required
             class="flex-1 rounded-lg px-4 py-2 text-body-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-y min-h-20"
             placeholder="Did you make this recipe? Leave a review!">{{ old('review') }}</textarea>
-        @error('review')
-            <p class="text-error mt-1">{{ $message }}</p>
-        @enderror
+
+        <x-error-message names="review" />
     </div>
     <div class="flex justify-between space-between w-full">
         <div class="flex items-center gap-2 text-subtitle-lg font-semibold">
@@ -29,11 +28,9 @@
                 </template>
             </div>
         </div>
-        @error('rating')
-            <p class="text-error mt-1">{{ $message }}</p>
-        @enderror
         <button
-            class="flex-center justify-between button bg-tertiary text-black text-subtitle-md font-semibold rounded-full">
+            class="flex-center justify-between button bg-tertiary text-black text-subtitle-md font-semibold rounded-full"
+            :disabled="rating < 1">
             Post Review
         </button>
     </div>

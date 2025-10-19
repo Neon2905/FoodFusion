@@ -67,7 +67,7 @@
 @extends('layouts.app', ['title' => $recipe->title])
 
 @section('content')
-    <div class="modal-card px-6 flex-1 gap-7">
+    <div class="card px-6 flex-1 gap-7">
         {{-- header --}}
         <div class="flex-center flex-col gap-1">
             <h1 class="">{{ $recipe->title }}</h1>
@@ -217,9 +217,9 @@
         </div>
     </div>
     <div class="flex flex-col items-start justify-start mr-0 gap-5 w-1/4">
-        <div class="modal-card w-full h-50"></div>
-        <div class="modal-card w-full h-50"></div>
-        <div class="modal-card w-full h-50"></div>
+        <div class="card w-full h-50"></div>
+        <div class="card w-full h-50"></div>
+        <div class="card w-full h-50"></div>
         <div class="flex-1"></div>
     </div>
 @endsection

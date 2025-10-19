@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // TODO: Review and adjust columns as needed.
         Schema::create('media', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();

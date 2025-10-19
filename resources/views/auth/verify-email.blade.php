@@ -7,7 +7,7 @@
 
 @section('content')
     <div class="flex-center w-full pt-20">
-        <div class="modal-card flex-center flex-col p-10 w-full max-w-lg">
+        <div class="card flex-center flex-col p-10 w-full max-w-lg">
             <h3 class="text-display-sm mb-4">Verify Your Email Address</h3>
 
             <p class="text-center mb-4">
