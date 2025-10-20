@@ -53,10 +53,8 @@ class VerificationController extends Controller
             }
         }
 
-        // send the verification email (uses the default notification)
         $user->sendEmailVerificationNotification();
 
-        // mark last-sent time in cache for cooldown seconds
         Cache::put($key, time(), $cooldown);
 
         return back()->with('message', 'Verification link sent!')->with('cooldown', $cooldown);
@@ -81,7 +79,7 @@ class VerificationController extends Controller
         }
 
         if (!$user->hasVerifiedEmail()) {
-            $user->markEmailAsVerified(); // fires Verified event and sets email_verified_at
+            $user->markEmailAsVerified();
         }
 
         return redirect('/')->with('status', 'Email verified!');

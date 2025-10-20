@@ -27,7 +27,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
         Auth::login($user, true);
-        return redirect()->intended('/');
+        return redirect()->intended('/')->with('success', 'Logged in successfully.');
     }
 
     public function register(Request $request)
@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        return back()->with('status', 'Registration successful! Please verify your email address.');
+        return back()->with('success', 'Registration successful! Please verify your email address.');
     }
 
     public function redirectToProvider($provider, Request $request)
@@ -104,7 +104,7 @@ class AuthController extends Controller
             }
 
             Auth::login($user, true);
-            return redirect()->intended('/');
+            return redirect()->intended('/')->with('success', 'Account linked and logged in successfully.');
         } else {
             return back()->withErrors([
                 'error' => 'Invalid action specified.',
