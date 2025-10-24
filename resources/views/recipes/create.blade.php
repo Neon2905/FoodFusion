@@ -28,14 +28,14 @@
             </div>
         @endif
 
-        <div class="flex md:flex-row flex-col w-full gap-3 pt-5">
+        <div class="flex lg:flex-row flex-col w-full gap-3 pt-5">
             {{-- Left side: Main inputs --}}
             <div class="flex flex-col w-full gap-3">
                 <div class="card ">
                     <p class="font-bold">
                         Title
                     </p>
-                    <input type="text" required name="title" class="w-full input-box"
+                    <input type="text" required name="title" x-model="title" class="w-full input-box"
                         placeholder="Grandma's Apple Pie">
                     <x-error-message names="title" />
                 </div>
@@ -53,7 +53,8 @@
                     <p class="font-bold">
                         Description
                     </p>
-                    <textarea required name="description" class="w-full input-box" placeholder="A quick, cozy dessert.."></textarea>
+                    <textarea required name="description" x-model="description" class="w-full input-box"
+                        placeholder="A quick, cozy dessert.."></textarea>
                     <x-error-message names="description" />
                 </div>
 
@@ -63,22 +64,22 @@
                             <p class="font-bold">
                                 Prep Time
                             </p>
-                            <input type="number" min="0" name="prep_time" class="w-full input-box"
-                                placeholder="10 mins" inputmode="numeric" pattern="[0-9]*">
+                            <input type="number" min="0" name="prep_time" x-model="prep_time"
+                                class="w-full input-box" placeholder="10 mins" inputmode="numeric" pattern="[0-9]*">
                         </div>
                         <div class="flex flex-col gap-3">
                             <p class="font-bold">
                                 Cook Time
                             </p>
-                            <input type="number" min="0" name="cook_time" class="w-full input-box"
-                                placeholder="30 mins" inputmode="numeric" pattern="[0-9]*">
+                            <input type="number" min="0" name="cook_time" x-model="cook_time"
+                                class="w-full input-box" placeholder="30 mins" inputmode="numeric" pattern="[0-9]*">
                         </div>
                     </div>
                     <div class="card  w-80">
                         <p class="font-bold">
                             Difficulty
                         </p>
-                        <input required type="text" name="difficulty" class="w-full input-box"
+                        <input required type="text" name="difficulty" x-model="difficulty" class="w-full input-box"
                             placeholder="Hard - Medium">
                         <x-error-message names="difficulty" />
                     </div>
@@ -86,7 +87,7 @@
                         <p class="font-bold">
                             Meal Type
                         </p>
-                        <input required type="text" name="meal_type" class="w-full input-box"
+                        <input required type="text" name="meal_type" x-model="meal_type" class="w-full input-box"
                             placeholder="Breakfast - Lunch - Dinner">
                         <x-error-message names="meal_type" />
                     </div>
@@ -137,7 +138,7 @@
                         <div x-transition class="mb-3">
                             <div class="flex items-start gap-3">
                                 <input type="text" :name="`steps[${index}][title]`" x-model="step.title"
-                                    class="w-20 input-box" :placeholder="`Step ${index + 1}`">
+                                    class="w-20 input-box" :placeholder="`Step ${index + 1}`" />
                                 <textarea required :name="`steps[${index}][instruction]`" x-model="step.instruction" rows="3"
                                     class="w-full input-box" placeholder="Do something..."></textarea>
                                 <input type="hidden" :name="`steps[${index}][step_order]`" :value="index + 1" />
@@ -175,43 +176,57 @@
                             <x-feathericon-plus-circle class="text-accent" />
                         </button>
                     </div>
-                    <template x-for="(tip, index) in tips" :key="index">
+                    <template x-for="(tip, i) in tips" :key="i">
                         <div x-transition class="mb-3">
                             <div class="flex items-start gap-3">
-                                <textarea :name="`tips[${index}][content]`" x-model="tip.content" rows="1" class="w-full input-box"
-                                    placeholder="Give a tip"></textarea>
-                                <input type="hidden" :name="`tips[${index}]`" :value="index" />
+                                <textarea x-model="tip.content" rows="1" class="w-full input-box" placeholder="Give a tip"></textarea>
+                                <template x-if="tip.content">
+                                    <input type="hidden" :name="`tips[${i}][content]`" x-model="tip.content" />
+                                </template>
                                 <div class="flex-center gap-2">
                                     <div class="flex flex-col gap-2">
                                         <button type="button" class="rounded-full size-min clickable"
-                                            @click="moveTipUp(index)" title="Move up"
+                                            @click="moveTipUp(i)" title="Move up"
                                             style="background:var(--color-primary); color:white">
                                             <x-bi-arrow-up-short class="size-4" />
                                         </button>
                                         <button type="button" class="rounded-full size-min clickable"
-                                            @click="moveTipDown(index)" title="Move down"
+                                            @click="moveTipDown(i)" title="Move down"
                                             style="background:var(--color-primary); color:white">
                                             <x-bi-arrow-down-short class="size-4" />
                                         </button>
                                     </div>
                                     <button x-show="tips.length > 1" type="button" class="clickable"
-                                        @click="removeTip(index)" title="Remove tip">
+                                        @click="removeTip(i)" title="Remove tip">
                                         <x-css-trash class="text-error" />
                                     </button>
                                 </div>
                             </div>
+                            <p x-text="@json('tip')"></p>
                         </div>
                     </template>
                 </div>
             </div>
 
             {{-- Right side: Additional inputs --}}
-            <div class="flex flex-col gap-3 md:w-1/3 w-full">
+            <div class="flex flex-col gap-3 lg:w-1/3 w-full">
                 <div class="card">
                     <p class="font-bold">
                         Tags
                     </p>
-                    <x-tag-input name="tags" placeholder="Add a tag" />
+                    <div class="flex items-center gap-2 flex-wrap p-2 border-1 border-accent rounded-md">
+                        <template x-for="(t, i) in tags" :key="i">
+                            <div class="tag flex items-center gap-2 px-3 py-1 bg-gray rounded-full">
+                                <span x-text="t"></span>
+                                <button type="button" @click.prevent="remove(i)" class="text-error">×</button>
+                                <input type="hidden" :name="`tags[${i}][name]`" x-model="t" />
+                            </div>
+                        </template>
+                        <input x-ref="input" @keydown.space.prevent="addFromInput()"
+                            @keydown.enter.prevent="addFromInput()" @keydown.backspace="onBackspace($event)"
+                            x-model="tagInputs" placeholder="Add a tag"
+                            class="flex-1 min-w-[120px] bg-transparent outline-none px-2 py-1" />
+                    </div>
                 </div>
                 <div class="card">
                     <p class="font-semibold">
@@ -280,26 +295,43 @@
 <script>
     function createRecipe() {
         return {
-            title: '',
-            description: '',
-            prep_time: '',
-            cook_time: '',
-            difficulty: '',
-            meal_type: '',
+            title: 'Apple Pie',
+            description: 'Description',
+            prep_time: '10',
+            cook_time: '30',
+            difficulty: 'Medium',
+            meal_type: 'Lunch',
 
-            servings: '',
+            tags: [],
+            tagInputs: '',
+            addFromInput() {
+                const v = (this.tagInputs || '').trim();
+                if (!v) return;
+                if (!this.tags.includes(v)) this.tags.push(v);
+                this.tagInputs = '';
+            },
+            remove(i) {
+                this.tags.splice(i, 1);
+            },
+            onBackspace(e) {
+                if (this.tagInputs === '') {
+                    this.tags.pop();
+                }
+            },
+
+            servings: '3',
             ingredients: [{
-                quantity: '',
-                unit: '',
-                name: ''
+                quantity: '2',
+                unit: 'cup',
+                name: 'flour'
             }],
             steps: [{
                 title: '',
-                instruction: ''
+                instruction: 'Doing Something'
             }],
-            tips: [''],
-            tags: [],
-            tagInput: '', // TODO
+            tips: [{
+                content: ''
+            }],
             addIngredient() {
                 this.ingredients.push({
                     quantity: '',
@@ -350,12 +382,6 @@
                 if (i === this.tips.length - 1) return;
                 const a = this.tips[i + 1];
                 this.tips.splice(i, 2, a, this.tips[i])
-            },
-            addTag() {
-                const t = this.tagInput && this.tagInput.trim();
-                if (!t) return;
-                if (!this.tags.includes(t)) this.tags.push(t);
-                this.tagInput = ''
             },
             nutritionLabels: {
                 calories: 'Calories',

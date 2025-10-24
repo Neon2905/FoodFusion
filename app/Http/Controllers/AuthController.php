@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         if (!Auth::attempt(credentials: $credentials)) {
             return back()->withErrors([
-                'error' => 'The provided credentials do not match our records.',
+                'auth_error' => 'The provided credentials do not match our records.',
             ]);
         }
 
@@ -69,7 +69,7 @@ class AuthController extends Controller
         if ($action === 'login') {
             if (!$user) {
                 return back()->withErrors([
-                    'error' => 'No account is linked with your provided login method. Please sign up first.',
+                    'auth_error' => 'No account is linked with your provided login method. Please sign up first.',
                 ]);
             }
             Auth::login($user, true);
@@ -77,7 +77,7 @@ class AuthController extends Controller
         } else if ($action === 'register' || $action === 'bind') {
             if ($user && $user->provider_id === $socialUser->getId()) {
                 return back()->withErrors([
-                    'error' => 'An account is already linked with your provided login method. Please log in instead.',
+                    'auth_error' => 'An account is already linked with your provided login method. Please log in instead.',
                 ]);
             }
 

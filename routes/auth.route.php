@@ -30,6 +30,7 @@ Route::middleware(['guest'])->group(function () {
         ->where('provider', 'facebook|apple|google')
         ->name('oauth.redirect');
 
+
     Route::get('/oauth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])
         ->where('provider', 'facebook|apple|google')
         ->name('oauth.callback');
@@ -47,9 +48,8 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('profile.notset')
         ->name('profile.setup.submit');
 
-    // Auth::routes(['verify' => true]);
-
     Route::get('/email/verify', [VerificationController::class, 'index'])
+        ->middleware('notverified')
         ->name('verification.notice');
 
     Route::post('/email/verification-notification', [VerificationController::class, 'requestNotification'])

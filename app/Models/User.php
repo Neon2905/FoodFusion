@@ -46,6 +46,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Profile::class);
     }
 
+    public function following()
+    {
+        return $this->belongsToMany(Profile::class);
+    }
+
+    public function isFollowing(Profile $profile): bool
+    {
+        return $this->following()->where('profile_id', $profile->id)->exists();
+    }
+
     /**
      * Get the attributes that should be cast.
      *

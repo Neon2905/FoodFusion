@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Tip extends Model
 {
     protected $table = 'recipe_tip';
+    protected $guarded = [];
 }

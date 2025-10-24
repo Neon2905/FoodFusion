@@ -19,7 +19,18 @@ class RecipeController extends Controller
             'meal_type' => 'required|string',
             'ingredients' => 'required|array|min:1',
             'steps' => 'required|array|min:1',
+            'tips' => 'array',
+            'prep_time' => 'nullable|integer',
+            'cook_time' => 'nullable|integer',
+            'nutritions' => 'array',
+            'tags' => 'array',
         ]);
+
+        // dd($validated['nutritions']);
+
+        // dd($request->all());
+
+        // dd($request['tips']);
 
         $media_meta = json_decode($request->input('media_meta', '[]'), true) ?? [];
         if (!is_array($media_meta)) {
@@ -40,17 +51,12 @@ class RecipeController extends Controller
 
         $recipe->ingredients()->createMany($validated['ingredients']);
         $recipe->steps()->createMany($validated['steps']);
-        $recipe->tags()->createMany($validated['tags'] ?? []);
+        $recipe->tags()->createMany($validated['tags'] ?? []); // TODO: fix this. no data found here!
         $recipe->tips()->createMany($validated['tips'] ?? []);
 
-        $recipe->nutrition()->create([
-            'calories' => $validated['calories'] ?? null,
-            'protein' => $validated['protein'] ?? null,
-            'carbs' => $validated['carbs'] ?? null,
-            'fat' => $validated['fat'] ?? null,
-            'fiber' => $validated['fiber'] ?? null,
-            'sugar' => $validated['sugar'] ?? null,
-        ]);
+        $recipe->nutrition()->create(
+            $validated['nutritions'] ?? []
+        );
 
         // store uploaded media files to local storage (storage/app/public/recipes/{recipe_id})
         if ($request->hasFile('media')) {
@@ -81,6 +87,11 @@ class RecipeController extends Controller
         return redirect()->route('recipes.show', ['slug' => $recipe->slug])->with('success', 'Recipe created successfully!');
     }
 
+    public function createView()
+    {
+        return view('recipes.create');
+    }
+
     protected function generateStoragePath($file, $recipeId)
     {
         $filename = time() . '_' . uniqid() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
@@ -94,8 +105,6 @@ class RecipeController extends Controller
     }
     public function show($slug)
     {
-        // return view('recipe');
-
         $recipe = Recipe::where('slug', $slug)
             ->with(['author', 'steps', 'ingredients', 'media', 'nutrition', 'reviews'])
             ->firstOrFail();

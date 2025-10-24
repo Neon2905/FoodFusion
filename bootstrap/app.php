@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\ProfileNotSet;
 use App\Http\Middleware\AuthSetup;
+use App\Http\Middleware\NotVerified;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->appendToGroup('profile.notset', [
             ProfileNotSet::class,
+        ]);
+        $middleware->appendToGroup('notverified', [
+            NotVerified::class,
         ]);
         $middleware->appendToGroup('auth.setup', [
             AuthSetup::class,

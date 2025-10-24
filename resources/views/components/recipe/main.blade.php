@@ -12,7 +12,7 @@
     $difficultyClass = $difficultyClassMap[strtolower($recipe->difficulty ?? '')] ?? 'black';
 @endphp
 
-<div class="card px-6 flex gap-7 lg:max-w-3/4">
+<div class="card px-6 flex gap-7 w-full">
     {{-- header --}}
     <div class="flex-center flex-col gap-1">
         <h1 class="text-center">{{ $recipe->title }}</h1>
@@ -23,7 +23,7 @@
         <div class="flex-center flex-col mt-2 gap-1">
             <x-rating :value="$recipe->rating" class="w-40" />
             {{-- TODO: optimize this count function --}}
-            <h4 class="text-muted">{{ $reviews->count() }} Reviews</h4>
+            <h4 class="text-muted">{{ $recipe->reviews->count() }} Reviews</h4>
         </div>
     </div>
     {{-- media --}}
@@ -97,13 +97,15 @@
     </div>
     {{-- author --}}
     <div class="flex items-center justify-between rounded-xl w-full bg-gray px-6 py-3">
-        <div class="flex gap-4">
-            <img class="size-23 rounded-full" src="{{ $author->profile }}" alt="profile">
-            <div class="flex justify-center flex-col text-left">
-                <h2 class="text-heading-lg">By {{ $author->name }}</h2>
-                <h5 class="font-normal">{{ $author->name }}</h5>
+        <a href="{{ route('profile.view', ['user' => $author->username]) }}">
+            <div class="flex gap-4">
+                <img class="size-23 rounded-full" src="{{ $author->profile }}" alt="profile">
+                <div class="flex justify-center flex-col text-left">
+                    <h2 class="text-heading-lg">By {{ $author->name }}</h2>
+                    <h5 class="font-normal">{{ $author->name }}</h5>
+                </div>
             </div>
-        </div>
+        </a>
         <button class="flex-center button h-10 rounded-full bg-light-gray w-auto px-4">
             <h2 class="text-heading-lg">Follow</h2>
             <x-icons.user-plus class="text-gray-700" />

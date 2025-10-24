@@ -13,6 +13,13 @@ class ProfileController extends Controller
         return view('profile.index', ['user' => $user, 'recipes' => $user->profile ? $user->profile->recipes : []]);
     }
 
+    public function view($profile)
+    {
+        $profile = Profile::where('username', $profile)->firstOrFail();
+        
+        return view('profile.index', ['user' => request()->user(), 'recipes' => $profile->recipes]);
+    }
+
     public function setup(Request $request)
     {
         $validated = $request->validate([
