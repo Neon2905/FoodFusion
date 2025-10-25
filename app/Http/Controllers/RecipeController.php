@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Recipe;
 use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RecipeController extends Controller
 {
@@ -59,23 +60,62 @@ class RecipeController extends Controller
                 $files = [$files];
             }
 
+            // Keep a mutable, re-indexed copy of media_meta to allow consuming matches
+            $remainingMeta = is_array($media_meta) ? array_values($media_meta) : [];
+
             foreach ($files as $index => $file) {
                 if (!$file || !$file->isValid()) {
                     continue;
                 }
 
+                // Try to find corresponding meta: prefer index match, else match by name+size
+                $meta = $remainingMeta[$index] ?? null;
+
+                if (!$meta) {
+                    $origName = $file->getClientOriginalName();
+                    $origSize = $file->getSize();
+                    $foundKey = null;
+                    foreach ($remainingMeta as $k => $m) {
+                        if ((isset($m['name']) && $m['name'] === $origName) || (isset($m['size']) && intval($m['size']) === intval($origSize))) {
+                            $meta = $m;
+                            $foundKey = $k;
+                            break;
+                        }
+                    }
+                    // consume matched meta so duplicates don't match again
+                    if ($foundKey !== null) {
+                        unset($remainingMeta[$foundKey]);
+                    }
+                } else {
+                    // consume index-matched meta
+                    unset($remainingMeta[$index]);
+                }
+
+                // store the file on the public disk; generateStoragePath will store and return the path
                 $storedPath = $this->generateStoragePath($file, $recipe->id);
 
+                // determine type from mime if not provided by meta
+                $mime = $file->getClientMimeType();
+                $type = 'image';
+                if (str_starts_with($mime, 'video/')) {
+                    $type = 'video';
+                } elseif (isset($meta['type']) && in_array($meta['type'], ['image', 'video'])) {
+                    $type = $meta['type'];
+                }
+
                 $recipe->media()->create([
-                    'url' => asset('storage/' . $storedPath),
-                    // 'caption' => $filename, TODO
-                    'type' => $media_meta[$index]['type'],
+                    'url' => '/storage/' . ltrim($storedPath, '/'),
+                    'type' => $type,
+                    'alt' => $meta['alt'] ?? null,
+                    'caption' => $meta['caption'] ?? null,
                 ]);
             }
 
-            $recipe->update([
-                'hero_url' => $recipe->media()->first()->url,
-            ]);
+            if ($first = $recipe->media()->first()) {
+                $recipe->update([
+                    'hero_url' => $first->url,
+                ]);
+            }
         }
 
         return redirect()->route('recipes.show', ['slug' => $recipe->slug])->with('success', 'Recipe created successfully!');
