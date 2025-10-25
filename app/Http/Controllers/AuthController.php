@@ -6,30 +6,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
-use App\Models\Profile;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validate the request
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Attempt to log the user in
         if (!Auth::attempt(credentials: $credentials)) {
             return back()->withErrors([
-                'error' => 'The provided credentials do not match our records.',
+                'auth_error' => 'The provided credentials do not match our records.',
             ]);
         }
 
-        // Authentication successful
         $user = User::where('email', $credentials['email'])->first();
         Auth::login($user, true);
-        return redirect()->intended('/recipes');
+        return redirect()->intended('/')->with('success', 'Logged in successfully.');
     }
 
     public function register(Request $request)
@@ -48,51 +46,70 @@ class AuthController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        return redirect('/email/verify');
+        return back()->with('success', 'Registration successful! Please verify your email address.');
     }
 
-    public function redirectToProvider($provider)
+    public function redirectToProvider($provider, Request $request)
     {
+        $action = $request->query('action', 'login');
+        session(['oauth_action' => $action]);
         return Socialite::driver($provider)->redirect();
     }
 
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback($provider, Request $request)
     {
         $socialUser = Socialite::driver($provider)->user();
+
+        $action = $request->session()->get('oauth_action');
 
         $user = User::where('provider', $provider)
             ->where('provider_id', $socialUser->getId())
             ->first();
 
-        if (!$user && $socialUser->getEmail()) {
-            $user = User::where('email', $socialUser->getEmail())->first();
-        }
+        if ($action === 'login') {
+            if (!$user) {
+                return back()->withErrors([
+                    'auth_error' => 'No account is linked with your provided login method. Please sign up first.',
+                ]);
+            }
+            Auth::login($user, true);
+            return redirect()->intended('/');
+        } else if ($action === 'register' || $action === 'bind') {
+            if ($user && $user->provider_id === $socialUser->getId()) {
+                return back()->withErrors([
+                    'auth_error' => 'An account is already linked with your provided login method. Please log in instead.',
+                ]);
+            }
 
-        if (!$user) {
-            $user = User::create([
-                'email' => $socialUser->getEmail(),
-                'email_verified_at' => now(),
-                'provider' => $provider,
-                'provider_id' => $socialUser->getId(),
-                'password' => bcrypt(bin2hex(random_bytes(10))), // random password
-            ]);
+            // Check if user exists by email (for binding)
+            $user = User::where('email', operator: $socialUser->getEmail())->first();
+            if ($user) {
+                $user->update([
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->getId(),
+                ]);
+            } else {
+                $user = User::create([
+                    'email' => $socialUser->getEmail(),
+                    'email_verified_at' => now(),
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->getId(),
+                    'password' => bcrypt(bin2hex(random_bytes(10))),
+                ]);
+                $user->profile()->create([
+                    'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
+                    'username' => 'user' . $user->id,
+                    'profile' => $socialUser->getAvatar(),
+                ]);
+            }
 
-            $user->profile->update([
-                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
-                'profile' => $socialUser->getAvatar(),
-            ]);
+            Auth::login($user, true);
+            return redirect()->intended('/')->with('success', 'Account linked and logged in successfully.');
         } else {
-            // TODO: Decide if this is necessary
-            // Update provider fields if missing
-            $user->update([
-                'provider' => $user->provider ?? $provider,
-                'provider_id' => $user->provider_id ?? $socialUser->getId(),
+            return back()->withErrors([
+                'error' => 'Invalid action specified.',
             ]);
         }
-
-        Auth::login($user, true);
-
-        return redirect()->intended('/');
     }
 
     public function logout(Request $request)

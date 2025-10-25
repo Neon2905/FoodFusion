@@ -2,7 +2,7 @@
     'max' => 5,
     'value' => 0,
     'primary' => 'primary',
-    'empty' => 'transparent',
+    'empty' => 'black',
     'size' => '5',
 ])
 

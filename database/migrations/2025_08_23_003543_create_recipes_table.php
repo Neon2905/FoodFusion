@@ -24,12 +24,11 @@ return new class extends Migration {
             $table->integer('cook_time')->nullable();
             $table->integer('total_time')->nullable();
 
-            $table->integer('servings')->nullable();
-            $table->string('cuisine', 100)->nullable(); //TODO:
-            $table->string('meal_type')->nullable(); //TODO:
-            $table->enum('difficulty', ['easy', 'medium', 'hard'])->default('easy');
+            $table->integer('servings');
+            $table->string('meal_type');
+            $table->string('difficulty')->default('easy');
 
-            $table->boolean('comments_enabled')->default(true);
+            // $table->boolean('comments_enabled')->default(true);
             $table->enum('visibility', ['public', 'unlisted', 'private'])->default('public');
             // $table->string('language', 20)->nullable();
 
@@ -40,26 +39,6 @@ return new class extends Migration {
 
             $table->timestamps();
         });
-
-        // Schema::create('comments', function (Blueprint $table) {
-        //     $table->bigIncrements('id');
-        //     $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
-        //     $table->foreignId('profile_id')->constrained('profiles')->cascadeOnDelete();
-        //     $table->text('comment');
-        //     $table->timestamps();
-        // });
-
-        // Schema::create('recipe_tags', function (Blueprint $table) {
-        //     $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
-        //     $table->string('tag', 50);
-        //     $table->primary(['recipe_id', 'tag']);
-        // });
-
-        // Schema::create('recipe_meal_types', function (Blueprint $table) {
-        //     $table->foreignUuid('recipe_id')->constrained('recipes')->cascadeOnDelete();
-        //     $table->string('meal_type', 50);
-        //     $table->primary(['recipe_id', 'meal_type']);
-        // });
     }
 
     /**
@@ -68,7 +47,5 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('recipes');
-        // Schema::dropIfExists('comments');
-        // Schema::dropIfExists('recipe_meal_types');
     }
 };

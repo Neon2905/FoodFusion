@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
         'provider',
         'provider_id',
     ];
@@ -45,6 +46,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Profile::class);
     }
 
+    public function following()
+    {
+        return $this->belongsToMany(Profile::class);
+    }
+
+    public function isFollowing(Profile $profile): bool
+    {
+        return $this->following()->where('profile_id', $profile->id)->exists();
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -62,10 +73,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         parent::boot();
 
-        static::created(function ($user) {
-            $user->profile()->create(
-                ['name' => explode('@', $user->email)[0]]
-            );
-        });
+        // static::created(function ($user) {
+        //     $user->profile()->create(
+        //         [
+        //             'name' => explode('@', $user->email)[0],
+        //             'username' => fake()->userName()
+        //         ]
+        //     );
+        // });
     }
 }

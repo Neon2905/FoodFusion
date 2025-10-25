@@ -67,7 +67,7 @@
 @extends('layouts.app', ['title' => $recipe->title])
 
 @section('content')
-    <div class="modal-card px-6 flex-1 gap-7">
+    <div class="card px-6 flex-1 gap-7">
         {{-- header --}}
         <div class="flex-center flex-col gap-1">
             <h1 class="">{{ $recipe->title }}</h1>
@@ -183,13 +183,13 @@
                 </div>
             </form>
             <div class="flex-center w-full flex-col gap-3">
-                <div class="flex justify-end items-center w-full border-b border-on-background text-subtitle-md gap-1 pb-2">
+                <div class="flex justify-end items-center w-full border-b border-muted text-subtitle-md gap-1 pb-2">
                     Sort by
                     <x-icons.chevron-down class="ml-2" />
                 </div>
                 @foreach ($recipe->reviews as $review)
                     <div
-                        class="flex flex-col justify-start items-start px-2 pb-2 w-full gap-1 border-b border-on-background">
+                        class="flex flex-col justify-start items-start px-2 pb-2 w-full gap-1 border-b border</div>-muted">
                         {{-- Header --}}
                         <div class="flex gap-3">
                             <img class="size-10" src="{{ $review->profile_url }}" alt="{{ $review->name }}">
@@ -217,9 +217,9 @@
         </div>
     </div>
     <div class="flex flex-col items-start justify-start mr-0 gap-5 w-1/4">
-        <div class="modal-card w-full h-50"></div>
-        <div class="modal-card w-full h-50"></div>
-        <div class="modal-card w-full h-50"></div>
+        <div class="card w-full h-50"></div>
+        <div class="card w-full h-50"></div>
+        <div class="card w-full h-50"></div>
         <div class="flex-1"></div>
     </div>
 @endsection

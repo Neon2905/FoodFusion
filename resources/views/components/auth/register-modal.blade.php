@@ -1,7 +1,13 @@
-<div class="modal flex-center" x-show="$store.modals.register" x-transition.opacity.duration.300ms>
-    <div class="modal-card bg-background p-[20px] w-[380px]">
+@props([
+    'show' => '$store.modals.register',
+    'onClose' => 'toggleRegisterModal()',
+    'onLogin' => 'toggleLoginModal()',
+])
+
+<div class="modal flex-center" x-show="{{ $show }}" x-transition.opacity.duration.300ms>
+    <div class="card bg-background p-[20px] w-[380px]">
         <div class="flex justify-end">
-            <button @click="toggleRegisterModal()">
+            <button @click="{{ $onClose }}">
                 <x-css-close class="h-[24px] w-[24px] fill-gray-400 hover:fill-gray-800" />
             </button>
         </div>
@@ -9,7 +15,7 @@
             <div class="flex-center w-full text-heading-lg font-semibold">
                 Creat an Account
             </div>
-            <form method="POST" action="/login" class="flex flex-col gap-[20px] px-[20px]">
+            <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-[20px] px-[20px]">
                 @csrf
                 <div class="flex flex-col gap-2">
                     <label for="email" class="text-body-lg font-bold">
@@ -54,11 +60,11 @@
                 <div class="text-heading-sm font-bold">
                     OR CONTINUE WITH
                 </div>
-                <x-auth.oauth />
+                <x-auth.oauth action="register" />
             </div>
             <div class="flex-center text-subtitle-md font-medium gap-1">
                 Already a member?
-                <button class="text-primary" @click="toggleLoginModal()">Log In</button>
+                <button class="text-primary" @click="{{ $onLogin }}">Log In</button>
             </div>
         </div>
     </div>

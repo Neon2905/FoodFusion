@@ -14,7 +14,7 @@
 
     <body class="bg-background">
         <x-navbar />
-        <main {{ $attributes->class(['flex w-full px-20 py-7 gap-5']) }}>
+        <main {{ $attributes->class(['flex w-full px-20 sm:px-10 py-7 gap-5']) }}>
             @yield('content')
         </main>
         <x-auth.login-modal />

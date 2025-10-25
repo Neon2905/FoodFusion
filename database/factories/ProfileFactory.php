@@ -19,6 +19,7 @@ class ProfileFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'username' => fake()->userName(),
             'name' => $this->faker->name(),
             'bio' => $this->faker->paragraph(),
             'profile' => 'https://randomuser.me/api/portraits/men/' . $this->faker->numberBetween(1, 99) . '.jpg',

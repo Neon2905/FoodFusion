@@ -2,8 +2,8 @@
 
 @section('content')
     <div class="flex-center w-full pt-20">
-        <div class="modal-card flex-center flex-col p-10 gap-4">
-            <h3 class="text-display-sm mb-2">Forgot Your Password?</h3>
+        <div class="card flex-center flex-col p-10 gap-2">
+            <h1>Forgot Your Password?</h1>
             <p class="text-center">
                 Enter your email address below and we'll send you a link to reset your password.
             </p>

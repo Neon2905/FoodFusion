@@ -1,15 +1,22 @@
-<div class="modal flex-center" x-show="$store.modals.login" x-transition.opacity.duration.300ms>
-    <div class="modal-card bg-background p-[20px] w-[380px]">
+@props([
+    'show' => '$store.modals.login',
+    'onClose' => 'toggleLoginModal()',
+    'onRegister' => 'toggleRegisterModal()',
+])
+
+<div class="modal flex-center" x-show="{{ $show }} || {{ $errors->has('auth_error') ? 'true' : 'false' }}"
+    x-transition.opacity.duration.300ms>
+    <div class="card bg-background p-5 w-95">
         <div class="flex justify-end">
-            <button @click="toggleLoginModal()">
-                <x-css-close class="h-[24px] w-[24px] fill-gray-400 hover:fill-gray-800" />
+            <button @click="{{ $onClose }}">
+                <x-css-close class="h-6 w-6 fill-gray-400 hover:fill-gray-800" />
             </button>
         </div>
-        <div class="flex flex-col gap-[20px]">
+        <div class="flex flex-col gap-5">
             <div class="flex-center w-full text-heading-lg font-semibold">
                 Log In
             </div>
-            <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-[20px] px-[20px]">
+            <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-5 px-5">
                 @csrf
                 <div class="flex flex-col gap-2">
                     <label for="email" class="text-body-lg font-bold">
@@ -26,11 +33,12 @@
                 </div>
                 <div class="flex-center flex-col px-[10px] gap-[10px]">
                     @if ($errors->any())
-                        <div class="text-red-600 text-body-sm">
-                            {{ $errors->first('error') }}
+                        <div class="text-error text-body-sm">
+                            {{ $errors->first('auth_error') }}
                         </div>
                     @endif
-                    <button type="submit" class="button bg-primary w-full h-10">
+
+                    <button type="submit" class="button bg-primary w-full h-10" @click="{{ $onClose }}">
                         Log In
                     </button>
                     <a href="" class="text-secondary text-body-md font-bold">
@@ -38,16 +46,20 @@
                     </a>
                 </div>
             </form>
-            </form>
             <div class="flex-center flex-col gap-[5px]">
                 <div class="text-heading-sm font-bold">
                     OR CONTINUE WITH
                 </div>
-                <x-auth.oauth/>
+                <x-auth.oauth />
             </div>
+            @if (session('success'))
+                <div class="text-success text-body-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
             <p class="flex-center text-subtitle-md font-medium gap-1">
                 Don't have an account yet?
-                <button class="text-primary" @click="toggleRegisterModal()">Register</button>
+                <button class="text-primary" @click="{{ $onRegister }}">Register</button>
             </p>
         </div>
     </div>

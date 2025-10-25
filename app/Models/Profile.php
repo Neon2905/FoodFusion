@@ -20,6 +20,7 @@ class Profile extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'username',
         'bio',
         'profile',
         'social_links',
@@ -43,7 +44,12 @@ class Profile extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function recipies()
+    public function followers()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function recipes()
     {
         return $this->hasMany(Recipe::class);
     }

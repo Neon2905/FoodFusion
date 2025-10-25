@@ -21,10 +21,11 @@
         <div
             class="bg-navbar-gray flex-center h-[56px] py-[8px] rounded-full border border-[rgba(191,191,191,0.5)] filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] px-[12px]">
             <div class="flex-center flex-row h-full gap-2">
-                <x-nav-item>
+                <x-nav-item href="{{route('search')}}">
                     <x-css-search class="size-6 cursor-pointer" />
                 </x-nav-item>
-                <x-nav-item>
+                {{-- TODO: Optimize or create new route --}}
+                <x-nav-item href="{{ route('profile.show', auth()->user()->username) }}">
                     <x-css-profile class="size-6 cursor-pointer" />
                 </x-nav-item>
                 <x-nav-item class="flex-center">

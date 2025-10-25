@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\RecipeStep;
 use App\Models\Ingredient;
 use App\Models\Nutrition;
+use App\Models\Media;
 use Illuminate\Support\Str;
 
 
@@ -25,17 +26,15 @@ class Recipe extends Model
         'cook_time',
         'total_time',
         'servings',
-        'cuisine',
         'meal_type',
         'difficulty',
-        'comments_enabled',
         'visibility',
         'rating',
         'analytics_views',
     ];
 
     protected $casts = [
-        'comments_enabled' => 'boolean',
+        // 'comments_enabled' => 'boolean',
         'analytics_views' => 'integer',
         'created_at' => 'datetime',
     ];
@@ -87,5 +86,15 @@ class Recipe extends Model
     public function nutrition()
     {
         return $this->hasOne(Nutrition::class);
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    public function tips()
+    {
+        return $this->hasMany(Tip::class);
     }
 }
