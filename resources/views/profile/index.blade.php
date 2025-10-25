@@ -44,32 +44,22 @@
                 </div>
             </div>
 
-            <form action="{{ route('follow.store', $profile->username) }}" method="POST">
-                @csrf
-                <button class="flex-center button h-10 rounded-full border border-muted bg-light-gray w-auto px-4">
-                    <h2 class="text-heading-lg">
-                        @if (auth()->user()->isFollowing($profile))
-                            Unfollow
-                        @else
-                            Follow
-                        @endif
-                    </h2>
-                    @if (auth()->user()->isFollowing($profile))
-                        X
-                    @else
-                        <x-icons.user-plus class="text-gray-700" />
-                    @endif
-                </button>
-            </form>
+            <x-follow :profile="$profile" />
         </div>
         <div class="flex items-center justify-between px-8 w-full border-b border-accent">
             {{-- Menu --}}
-            {{-- TODO: Implement menu items --}}
+            {{-- TODO: Review later --}}
+            @php
+                $route =
+                    auth()->check() && optional(auth()->user()->profile)->id === optional($profile)->id
+                        ? 'profile.show'
+                        : 'profile.view';
+            @endphp
             <div class="flex">
-                <x-tab href="#">Home</x-tab>
-                <x-tab href="#">Videos</x-tab>
-                <x-tab href="#">Recipes</x-tab>
-                <x-tab href="#">Resources</x-tab>
+                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'home']) }}">Home</x-tab>
+                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'videos']) }}">Videos</x-tab>
+                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'recipes']) }}">Recipes</x-tab>
+                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'resources']) }}">Resources</x-tab>
             </div>
             <x-css-search class="size-8 cursor-pointer" />
         </div>

@@ -83,7 +83,7 @@ class RecipeController extends Controller
 
     public function createView()
     {
-        return view('recipes.create');
+        return view('recipe.create');
     }
 
     protected function generateStoragePath($file, $recipeId)
@@ -94,8 +94,8 @@ class RecipeController extends Controller
 
     public function index()
     {
-        $recipes = Recipe::get();
-        return view('recipes.index', ['recipes' => $recipes]);
+        $recipes = Recipe::paginate(10);
+        return view('recipe.index', ['recipes' => $recipes]);
     }
     public function show($slug)
     {
@@ -103,7 +103,7 @@ class RecipeController extends Controller
             ->with(['author', 'steps', 'ingredients', 'media', 'nutrition', 'reviews'])
             ->firstOrFail();
 
-        return view('recipes.detail', compact('recipe'));
+        return view('recipe.detail', compact('recipe'));
     }
 
     public function submitReview(Request $request, $slug)
@@ -121,6 +121,6 @@ class RecipeController extends Controller
             'review' => $request->input('review'),
         ]);
 
-        return redirect()->route('recipes.show', ['slug' => $slug])->with('success', 'Review submitted successfully!');
+        return back()->with('success', 'Review submitted successfully!');
     }
 }

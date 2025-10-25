@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\FollowsController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SearchController;
 
 Route::get('/test', function () {
     return view('test');
@@ -33,16 +33,11 @@ Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth', 
 Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.show');
 Route::post('/recipe', [RecipeController::class, 'create'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.create');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/profile/{user:username}', [ProfileController::class, 'view'])->name('profile.view');
-});
-
 Route::post('/follow/{profile:username}', [FollowsController::class, 'store'])
     ->middleware(middleware: ['auth', 'verified', 'auth.setup'])
     ->name('follow.store');
 
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+
+require __DIR__ . '/profile.route.php';
 require __DIR__ . '/auth.route.php';

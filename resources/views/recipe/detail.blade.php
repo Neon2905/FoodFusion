@@ -27,6 +27,7 @@
     <div class="flex flex-col lg:flex-row gap-4 w-full">
         {{-- main recipe info --}}
         <x-recipe.main :recipe="$recipe" :author="$author" />
+
         <div class="flex flex-col gap-5">
             {{-- Ingredients --}}
             <div class="card flex-center w-full px-7 py-5" x-data="{ serving_size: {{ $recipe->servings }} }">
