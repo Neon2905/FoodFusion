@@ -16,8 +16,8 @@ class ProfileController extends Controller
     public function view($profile)
     {
         $profile = Profile::where('username', $profile)->firstOrFail();
-        
-        return view('profile.index', ['user' => request()->user(), 'recipes' => $profile->recipes]);
+
+        return view('profile.index', ['user' => $profile->user, 'recipes' => $profile->recipes]);
     }
 
     public function setup(Request $request)

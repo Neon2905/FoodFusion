@@ -106,10 +106,7 @@
                 </div>
             </div>
         </a>
-        <button class="flex-center button h-10 rounded-full bg-light-gray w-auto px-4">
-            <h2 class="text-heading-lg">Follow</h2>
-            <x-icons.user-plus class="text-gray-700" />
-        </button>
+        <x-follow :profile="$author" :isFollowing="auth()->user()->isFollowing($author)" />
     </div>
     {{-- reviews --}}
     <div x-data="{ showCount: 3 }" class="flex flex-col items-start rounded-xl w-full bg-gray px-6 py-7 gap-5">

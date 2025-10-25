@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{user:username}', [ProfileController::class, 'view'])->name('profile.view');
 });
 
-Route::post('/follow/{user}', [FollowsController::class, 'store'])
+Route::post('/follow/{profile:username}', [FollowsController::class, 'store'])
     ->middleware(middleware: ['auth', 'verified', 'auth.setup'])
     ->name('follow.store');
 

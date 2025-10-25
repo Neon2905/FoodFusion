@@ -31,11 +31,11 @@
         {{-- Header --}}
         <div class="flex-center flex-row justify-between w-full pb-4 px-6">
             <div class="flex w-full gap-3 items-start">
-                <img src="{{ asset('images/profile-icons/profile.png') }}" alt="user profile"
-                    class="rounded-full size-35 border-muted">
+                <img src="{{ $profile->profile }}" alt="user profile" class="rounded-full size-35 border-muted">
                 <div class="flex-col gap-3 items-start">
                     <h1 class="text-display-sm">{{ $profile->name }}</h1>
-                    <h3 class="gap-2 text-muted">{{ '@' . $profile->username . ' • ' . '20K Followers' }}</h3>
+                    <h3 class="gap-2 text-muted">
+                        {{ '@' . $profile->username . ' • ' . $profile->followers()->count() . ' Followers' }}</h3>
                     <div class="flex flex-row justify-between text-body-md font-bold">
                         <p>{{ 'Recipes: ' . $recipes->count() }}</p>
                         <p>{{ 'Recipes: ' . $recipes->count() }}</p>
@@ -43,20 +43,24 @@
                     <p class="text-body-md font-bold text-muted">{{ $profile->bio }}</p>
                 </div>
             </div>
-            <button class="flex-center button h-10 rounded-full border border-muted bg-light-gray w-auto px-4">
-                <h2 class="text-heading-lg">
+
+            <form action="{{ route('follow.store', $profile->username) }}" method="POST">
+                @csrf
+                <button class="flex-center button h-10 rounded-full border border-muted bg-light-gray w-auto px-4">
+                    <h2 class="text-heading-lg">
+                        @if (auth()->user()->isFollowing($profile))
+                            Unfollow
+                        @else
+                            Follow
+                        @endif
+                    </h2>
                     @if (auth()->user()->isFollowing($profile))
-                        Unfollow
+                        X
                     @else
-                        Follow
+                        <x-icons.user-plus class="text-gray-700" />
                     @endif
-                </h2>
-                @if (auth()->user()->isFollowing($profile))
-                    X
-                @else
-                    <x-icons.user-plus class="text-gray-700" />
-                @endif
-            </button>
+                </button>
+            </form>
         </div>
         <div class="flex items-center justify-between px-8 w-full border-b border-accent">
             {{-- Menu --}}

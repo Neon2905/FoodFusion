@@ -26,12 +26,6 @@ class RecipeController extends Controller
             'tags' => 'array',
         ]);
 
-        // dd($validated['nutritions']);
-
-        // dd($request->all());
-
-        // dd($request['tips']);
-
         $media_meta = json_decode($request->input('media_meta', '[]'), true) ?? [];
         if (!is_array($media_meta)) {
             $media_meta = [];
