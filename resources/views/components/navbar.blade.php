@@ -1,12 +1,9 @@
-<nav class="sticky top-0 z-50 w-full flex flex-row items-center justify-between pt-[10px] px-[30px]">
+<nav class="flex sticky top-0 z-50 w-full flex-row items-center justify-between md:pt-3 md:px-7">
     <div class="flex items-center gap-0 text-display-md drop-shadow-[0_4px_4px_rgba(0,0,0,.5)]">
-        <span class="text-primary">
-            Food
-        </span>
-        <span class="text-accent">
-            Fusion
-        </span>
+        <span class="text-primary">Food</span>
+        <span class="text-accent">Fusion</span>
     </div>
+
     <div
         class="bg-navbar-gray flex-center h-[60px] py-[8px] rounded-full border border-[rgba(191,191,191,0.5)] filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] px-[10px]">
         <div class="flex-center flex-row h-full gap-3">
@@ -19,12 +16,14 @@
 
     @auth
         <div
-            class="bg-navbar-gray flex-center h-[56px] py-[8px] rounded-full border border-[rgba(191,191,191,0.5)] filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] px-[12px]">
+            class="bg-navbar-gray flex-center h-14 py-2 rounded-full border border-[rgba(191,191,191,0.5)] filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] px-[12px]">
             <div class="flex-center flex-row h-full gap-2">
+                <x-nav-item class="hidden"> {{-- TODO: Fix this crap--}}
+                    <x-css-menu class="size-6 cursor-pointer" />
+                </x-nav-item>
                 <x-nav-item href="{{route('search')}}">
                     <x-css-search class="size-6 cursor-pointer" />
                 </x-nav-item>
-                {{-- TODO: Optimize or create new route --}}
                 <x-nav-item href="{{ route('profile.show', auth()->user()->username) }}">
                     <x-css-profile class="size-6 cursor-pointer" />
                 </x-nav-item>
