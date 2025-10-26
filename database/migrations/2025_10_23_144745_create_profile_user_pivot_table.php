@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('profile_user', function (Blueprint $table) {
+        Schema::create('profile_user_pivot', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('profile_id');
             $table->unsignedBigInteger('user_id');
@@ -23,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('profile_user');
+        Schema::dropIfExists('profile_user_pivot');
     }
 };

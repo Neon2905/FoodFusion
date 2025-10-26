@@ -32,8 +32,6 @@ return new class extends Migration {
             $table->enum('visibility', ['public', 'unlisted', 'private'])->default('public');
             // $table->string('language', 20)->nullable();
 
-            $table->integer('rating')->default(0);
-
             // $table->integer('analytics_views')->default(0);
             $table->bigInteger('analytics_views')->default(0);
 

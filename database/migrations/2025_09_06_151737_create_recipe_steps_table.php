@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->integer('step_order')->default(1);
             $table->string('title')->nullable();
             $table->text('instruction');
-            $table->integer('duration')->nullable();
-            $table->string('temperature')->nullable();
+            // $table->integer('duration')->nullable();
+            // $table->string('temperature')->nullable();
             $table->timestamps();
         });
     }

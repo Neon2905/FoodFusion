@@ -4,6 +4,7 @@ use App\Http\Controllers\FollowsController;
 use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\PageController;
 
 Route::get('/test', function () {
     return view('test');
@@ -20,6 +21,14 @@ Route::post('/test', function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/community', [PageController::class, 'community'])->name('community');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'contactSubmit'])->name('contact.submit');
+Route::get('/resources/culinary', [PageController::class, 'culinaryResources'])->name('resources.culinary');
+Route::get('/resources/educational', [PageController::class, 'educationalResources'])->name('resources.educational');
+
 
 Route::get('/recipe/create', [RecipeController::class, 'createView'])
     ->middleware(['auth', 'verified', 'auth.setup'])

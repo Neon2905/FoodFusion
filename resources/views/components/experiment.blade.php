@@ -1,98 +1,96 @@
-@extends('layouts.app')
-
-@section('content')
-    <div class="max-w-3xl mx-auto py-6" x-data="{
-        items: [],
-        selected: 0,
-        current() { return this.items[this.selected] ?? null; },
-        addFiles(e) {
-            const files = Array.from(e.target.files || []);
-            files.forEach(file => {
-                const kind = file.type.startsWith('video') ? 'video' : 'image';
-                const url = URL.createObjectURL(file);
-                this.items.push({ type: kind, url, name: file.name });
-            });
-            // select last added
-            if (this.items.length) this.selected = this.items.length - 1;
-            // clear input so same file can be re-selected if needed
-            e.target.value = '';
-            this.$nextTick(() => {
-                if (this.current() && this.current().type === 'video') {
-                    try { this.$refs.mainVideo && this.$refs.mainVideo.play().catch(() => {}); } catch (e) {}
-                }
-            });
-        },
-        remove(i) {
-            const removed = this.items.splice(i, 1)[0];
-            if (removed && removed.url) URL.revokeObjectURL(removed.url);
-            if (this.selected >= this.items.length) this.selected = Math.max(0, this.items.length - 1);
-        },
-        select(i) {
-            this.selected = i;
-            this.$nextTick(() => {
-                if (this.current() && this.current().type === 'video') {
-                    try { this.$refs.mainVideo && this.$refs.mainVideo.play().catch(() => {}); } catch (e) {}
-                }
-            });
-        }
-    }">
-        {{-- file picker --}}
-        <div class="mb-4"></div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Add photos or videos</label>
-        <input type="file" accept="image/*,video/*" multiple x-on:change="addFiles($event)"
-            class="block w-full text-sm text-gray-700" />
-        <p class="text-xs text-gray-500 mt-1">You can select multiple files. Previews are stored in-memory via object URLs.
-        </p>
-    </div>
-
-    {{-- Main preview --}}
-    <div class="rounded overflow-hidden bg-black mb-3">
-        <template x-if="current() && current().type === 'image'"></template>
-        <img x-bind:src="current() ? current().url : ''" alt="media" class="w-full object-contain max-h-[520px]" />
-        </template>
-
-        <template x-if="current() && current().type === 'video'"></template>
-        <video x-ref="mainVideo" x-bind:src="current() ? current().url : ''" controls playsinline
-            class="w-full max-h-[520px] bg-black"></video>
-        </template>
-
-        <template x-if="!current()"></template>
-        <div class="w-full h-40 flex items-center justify-center text-gray-400">No media selected</div>
-        </template>
-    </div>
-
-    {{-- Thumbnails --}}
-    <div class="flex items-center gap-2 overflow-x-auto py-1 px-2 no-scrollbar"></div>
-    <template x-for="(m, i) in items" :key="i">
-        <div class="flex items-center gap-2"></div>
-        <button x-on:click.prevent="select(i)" x-bind:aria-pressed="selected === i ? 'true' : 'false'"
-            class="flex-shrink-0 w-24 h-16 rounded overflow-hidden border p-0 bg-white transition transform duration-150 ease-in-out focus:outline-none"
-            x-bind:class="selected === i ? 'ring-2 ring-indigo-500 scale-105' : ''" type="button">
-            <template x-if="m.type === 'video'">
-                <div class="relative w-full h-full bg-black">
-                    <video muted class="object-cover w-full h-full">
-                        <source :src="m.url">
-                    </video>
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none"></div>
-                    <svg class="w-5 h-5 text-white opacity-90" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24"></svg>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M14.752 11.168l-6.545 3.773A1 1 0 017 13.999V9.001a1 1 0 011.207-.966l6.545 1.133a1 1 0 01.0.0z" />
+<!-- Include this script tag or install `@tailwindplus/elements` via npm: -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script> -->
+<nav
+    class="relative bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10">
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                <!-- Mobile menu button-->
+                <button type="button" command="--toggle" commandfor="mobile-menu"
+                    class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-500">
+                    <span class="absolute -inset-0.5"></span>
+                    <span class="sr-only">Open main menu</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon"
+                        aria-hidden="true" class="size-6 [[aria-expanded='true']_&]:hidden">
+                        <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon"
+                        aria-hidden="true" class="size-6 [&:not([aria-expanded='true']_*)]:hidden">
+                        <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                <div class="flex shrink-0 items-center">
+                    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+                        alt="Your Company" class="h-8 w-auto" />
                 </div>
+                <div class="hidden sm:ml-6 sm:block">
+                    <div class="flex space-x-4">
+                        <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
+                        <a href="#" aria-current="page"
+                            class="rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white">Dashboard</a>
+                        <a href="#"
+                            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Team</a>
+                        <a href="#"
+                            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Projects</a>
+                        <a href="#"
+                            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">Calendar</a>
+                    </div>
                 </div>
-            </template>
+            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <button type="button"
+                    class="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500">
+                    <span class="absolute -inset-1.5"></span>
+                    <span class="sr-only">View notifications</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon"
+                        aria-hidden="true" class="size-6">
+                        <path
+                            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
 
-            <template x-if="m.type === 'image'"></template>
-            <img class="w-full h-full object-cover" x-bind:src="m.url" alt="thumb">
-    </template>
-    </button>
+                <!-- Profile dropdown -->
+                <el-dropdown class="relative ml-3">
+                    <button
+                        class="relative flex rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                        <span class="absolute -inset-1.5"></span>
+                        <span class="sr-only">Open user menu</span>
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                            alt=""
+                            class="size-8 rounded-full bg-gray-800 outline outline-1 -outline-offset-1 outline-white/10" />
+                    </button>
 
-    {{-- remove button --}}
-    <button x-on:click.prevent="remove(i)" type="button" class="text-red-600 hover:text-red-800 text-sm px-2"
-        title="Remove">Remove</button>
+                    <el-menu anchor="bottom end" popover
+                        class="m-0 w-48 origin-top-right rounded-md bg-gray-800 p-0 py-1 outline outline-1 -outline-offset-1 outline-white/10 transition [--anchor-gap:theme(spacing.2)] [transition-behavior:allow-discrete] data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in">
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-none">Your
+                            profile</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-none">Settings</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-none">Sign
+                            out</a>
+                    </el-menu>
+                </el-dropdown>
+            </div>
+        </div>
     </div>
-    </template>
-    </div>
-    </div>
-@endsection
+
+    <el-disclosure id="mobile-menu" hidden class="sm:hidden [&:not([hidden])]:block">
+        <div class="space-y-1 px-2 pb-3 pt-2">
+            <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
+            <a href="#" aria-current="page"
+                class="block rounded-md bg-gray-950/50 px-3 py-2 text-base font-medium text-white">Dashboard</a>
+            <a href="#"
+                class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Team</a>
+            <a href="#"
+                class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Projects</a>
+            <a href="#"
+                class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Calendar</a>
+        </div>
+    </el-disclosure>
+</nav>

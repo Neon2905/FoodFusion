@@ -19,6 +19,8 @@
         </main>
         <x-auth.login-modal />
         <x-auth.register-modal />
+
+        <x-footer />
     </body>
 
 </html>

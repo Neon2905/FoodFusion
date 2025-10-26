@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('nutrition', function (Blueprint $table) {
             $table->foreignId('recipe_id')->primary()->constrained('recipes')->cascadeOnDelete();
-            $table->integer('calories')->nullable();
+            $table->decimal('calories', 6, 2)->nullable();
             $table->decimal('fat', 6, 2)->nullable();
             $table->decimal('carbs', 6, 2)->nullable();
             $table->decimal('protein', 6, 2)->nullable();
