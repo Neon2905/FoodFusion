@@ -25,7 +25,7 @@
                         <x-css-search class="size-6 cursor-pointer" />
                     </x-nav-item>
                     <x-nav-item href="{{ route('profile.show', auth()->user()->username) }}">
-                        <img src="{{ auth()->user()->profile()->profile }}" alt="profile"> {{-- TODO: Fix this shtttt --}}
+                        <img src="{{ auth()->user()->profile->profile }}" class="size-7 rounded-full" alt="profile">
                     </x-nav-item>
                     <x-nav-item class="flex-center">
                         <form method="POST" action="{{ route('logout') }}">
@@ -72,18 +72,18 @@
     <!-- Mobile menu (small screens only) -->
     <div x-cloak x-show="open" @click.away="open = false" class="lg:hidden">
         <div class="bg-white border-t shadow-sm py-4">
-            <div class="flex flex-col gap-2 px-4">
-                <x-nav-item href="/community" class="block w-full text-left">Community</x-nav-item>
-                <x-nav-item href="/recipes" class="block w-full text-left">Recipes</x-nav-item>
-                <x-nav-item href="/resources" class="block w-full text-left">Resources</x-nav-item>
-                <x-nav-item href="/about" class="block w-full text-left">About</x-nav-item>
+            <div class="flex flex-col flex-center gap-2 px-4">
+                <x-nav-item href="/community" class="block w-min text-left">Community</x-nav-item>
+                <x-nav-item href="/recipes" class="block w-min text-left">Recipes</x-nav-item>
+                <x-nav-item href="/resources" class="block w-min text-left">Resources</x-nav-item>
+                <x-nav-item href="/about" class="block w-min text-left">About</x-nav-item>
 
                 <hr class="my-2" />
 
                 @auth
-                    <x-nav-item href="{{ route('search') }}" class="block w-full text-left">Search</x-nav-item>
+                    <x-nav-item href="{{ route('search') }}" class="block w-min text-left">Search</x-nav-item>
                     <x-nav-item href="{{ route('profile.show', auth()->user()->username) }}"
-                        class="block w-full text-left">Profile</x-nav-item>
+                        class="block w-min text-left">Profile</x-nav-item>
                     <form method="POST" action="{{ route('logout') }}" class="w-full flex-center">
                         @csrf
                         <button type="submit" class="button rounded-full bg-primary">Log out</button>

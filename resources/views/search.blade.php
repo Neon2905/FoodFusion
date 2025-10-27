@@ -4,32 +4,35 @@
     <div class="w-full">
         <div class="modal-card p-6">
             <div x-data="searchPage()" x-init="init()" class="flex flex-col gap-4">
-                <div class="flex gap-3 items-center">
-                    <input x-model="query" @input.debounce.300="search(true)" type="search"
-                        placeholder="Search recipes, ingredients, cuisines..." class="flex-1 input-box" />
+                <div class="flex gap-3 w-full">
+                    <div class="flex lg:flex-row flex-col w-full gap-3">
+                        <input x-model="query" @input.debounce.300="search(true)" type="search"
+                            placeholder="Search recipes, ingredients, cuisines..." class="flex-1 input-box rounded-full" />
+                        <div class="flex sm:flex-row flex-col gap-2 lg:w-min w-full items-center">
+                            <select x-model="filters.meal_type" @change="search(true)" class="input-box w-40">
+                                <option value="">All meal types</option>
+                                @foreach ($meal_types as $m)
+                                    <option value="{{ $m }}">{{ $m }}</option>
+                                @endforeach
+                            </select>
 
-                    <select x-model="filters.meal_type" @change="search(true)" class="input-box w-40">
-                        <option value="">All meal types</option>
-                        @foreach ($meal_types as $m)
-                            <option value="{{ $m }}">{{ $m }}</option>
-                        @endforeach
-                    </select>
+                            <select x-model="filters.tag" @change="search(true)" class="input-box w-40">
+                                <option value="">All tags</option>
+                                @foreach ($tags as $t)
+                                    <option value="{{ $t }}">{{ $t }}</option>
+                                @endforeach
+                            </select>
 
-                    <select x-model="filters.tag" @change="search(true)" class="input-box w-40">
-                        <option value="">All tags</option>
-                        @foreach ($tags as $t)
-                            <option value="{{ $t }}">{{ $t }}</option>
-                        @endforeach
-                    </select>
+                            <select x-model="filters.difficulty" @change="search(true)" class="input-box w-40">
+                                <option value="">Any difficulty</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
 
-                    <select x-model="filters.difficulty" @change="search(true)" class="input-box w-36">
-                        <option value="">Any difficulty</option>
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
-
-                    <button @click="search(true)" class="button bg-primary text-white px-4">Search</button>
+                    <button @click="search(true)" class="button bg-primary px-4 pt-3 h-min">Search</button>
                 </div>
 
                 <div class="flex items-center justify-between">

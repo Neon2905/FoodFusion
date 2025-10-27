@@ -133,14 +133,33 @@
         return {
             // modal / form
             showJoin: false,
-            joinForm: { first_name: '', last_name: '', email: '', password: '' },
+            joinForm: {
+                first_name: '',
+                last_name: '',
+                email: '',
+                password: ''
+            },
 
             // carousel
             carouselIndex: 0,
-            carouselItems: [
-                { id: 1, title: 'Farm-to-Table Workshop', date: '2025-11-09', img: null },
-                { id: 2, title: 'Sourdough Basics', date: '2025-12-02', img: null },
-                { id: 3, title: 'Holiday Feast Ideas', date: '2026-01-15', img: null }
+            carouselItems: [{
+                    id: 1,
+                    title: 'Farm-to-Table Workshop',
+                    date: '2025-11-09',
+                    img: null
+                },
+                {
+                    id: 2,
+                    title: 'Sourdough Basics',
+                    date: '2025-12-02',
+                    img: null
+                },
+                {
+                    id: 3,
+                    title: 'Holiday Feast Ideas',
+                    date: '2026-01-15',
+                    img: null
+                }
             ],
             nextSlide() {
                 this.carouselIndex = (this.carouselIndex + 1) % this.carouselItems.length;
@@ -150,10 +169,21 @@
             },
 
             // news feed (placeholder items — swap with server data)
-            news: [
-                { id: 1, title: 'Featured: Lemon Roast Chicken', excerpt: 'A bright, simple roast that steals the show.' },
-                { id: 2, title: 'Trend: Fusion Breakfast Bowls', excerpt: 'Mix global flavors for a nutrient-packed morning.' },
-                { id: 3, title: 'How-to: Crispy Skillet Potatoes', excerpt: 'A step-by-step to perfect crispiness.' }
+            news: [{
+                    id: 1,
+                    title: 'Featured: Lemon Roast Chicken',
+                    excerpt: 'A bright, simple roast that steals the show.'
+                },
+                {
+                    id: 2,
+                    title: 'Trend: Fusion Breakfast Bowls',
+                    excerpt: 'Mix global flavors for a nutrient-packed morning.'
+                },
+                {
+                    id: 3,
+                    title: 'How-to: Crispy Skillet Potatoes',
+                    excerpt: 'A step-by-step to perfect crispiness.'
+                }
             ],
 
             // cookie consent
@@ -174,15 +204,21 @@
             },
 
             // helpers for join modal
-            openJoin() { this.showJoin = true; },
-            closeJoin() { this.showJoin = false; },
+            openJoin() {
+                this.showJoin = true;
+            },
+            closeJoin() {
+                this.showJoin = false;
+            },
 
             // optional AJAX submit fallback (if you want to submit via fetch)
             async submitJoinForm(e) {
                 // If the form uses regular server POST (action + method + @csrf), remove this handler.
                 // This function demonstrates AJAX submission and simple client-side validation.
                 e.preventDefault();
-                const payload = { ...this.joinForm };
+                const payload = {
+                    ...this.joinForm
+                };
                 if (!payload.email || !payload.password) {
                     alert('Please provide email and password.');
                     return;

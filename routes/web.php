@@ -42,6 +42,8 @@ Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth', 
 Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.show');
 Route::post('/recipe', [RecipeController::class, 'create'])->middleware(['auth', 'verified', 'auth.setup'])->name('recipes.create');
 
+Route::get('/resources', [PageController::class, 'culinaryResources'])->name('resources.culinary');
+
 Route::post('/follow/{profile:username}', [FollowsController::class, 'store'])
     ->middleware(middleware: ['auth', 'verified', 'auth.setup'])
     ->name('follow.store');
