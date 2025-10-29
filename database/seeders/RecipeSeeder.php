@@ -78,7 +78,6 @@ class RecipeSeeder extends Seeder
                         'step_order' => $i,
                         'title' => fake()->word(),
                         'instruction' => fake()->sentence(),
-                        'duration' => fake()->numberBetween(1, 30),
                     ];
                 }
                 RecipeStep::insert($steps);

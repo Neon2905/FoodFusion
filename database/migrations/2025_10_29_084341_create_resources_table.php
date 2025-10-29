@@ -15,12 +15,13 @@ return new class extends Migration {
             $table->foreignId('profile_id')->nullable()->constrained('profiles')->nullOnDelete();
             $table->string('slug')->unique()->nullable();
             $table->string('title');
-            $table->enum('type', ['card', 'tutorial', 'video'])->default('tutorial');
+            $table->enum('category', ['culinary', 'educational'])->default('culinary');
+            $table->enum('type', ['card', 'tutorial', 'video', 'technique'])->default('tutorial');
             $table->text('description')->nullable();
-            $table->string('file_path')->nullable(); // for downloadable cards stored in storage/app/public
-            $table->string('external_url')->nullable(); // tutorials or hosted videos
+            $table->string('file_path')->nullable();
+            $table->string('external_url')->nullable();
             $table->string('thumbnail_url')->nullable();
-            $table->integer('duration')->nullable(); // seconds (videos)
+            $table->integer('duration')->nullable();
             $table->json('tags')->nullable();
             $table->boolean('published')->default(true);
             $table->integer('download_count')->default(0);

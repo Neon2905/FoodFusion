@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call(RecipeSeeder::class);
+        $this->call([
+            RecipeSeeder::class,
+            ResourceSeeder::class,
+        ]);
     }
 }

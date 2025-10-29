@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Resource;
 
 class PageController extends Controller
 {
@@ -36,11 +37,23 @@ class PageController extends Controller
 
     public function culinaryResources()
     {
-        return view('culinary-resources');
+        $resources = Resource::query()
+            ->where('published', true)
+            ->where('category', 'culinary')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('culinary-resources', compact('resources'));
     }
 
     public function educationalResources()
     {
-        return view('educational-resources');
+        $resources = Resource::query()
+            ->where('published', true)
+            ->where('category', 'educational')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('educational-resources', compact('resources'));
     }
 }

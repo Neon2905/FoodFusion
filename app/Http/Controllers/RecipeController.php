@@ -46,7 +46,7 @@ class RecipeController extends Controller
 
         $recipe->ingredients()->createMany($validated['ingredients']);
         $recipe->steps()->createMany($validated['steps']);
-        $recipe->tags()->createMany($validated['tags'] ?? []); // TODO: fix this. no data found here!
+        $recipe->tags()->createMany($validated['tags'] ?? []);
         $recipe->tips()->createMany($validated['tips'] ?? []);
 
         $recipe->nutrition()->create(
@@ -134,7 +134,7 @@ class RecipeController extends Controller
 
     public function index()
     {
-        $recipes = Recipe::paginate(10);
+        $recipes = Recipe::latest()->paginate(10);
         return view('recipe.index', ['recipes' => $recipes]);
     }
     public function show($slug)
