@@ -132,9 +132,37 @@ class RecipeController extends Controller
         return $file->storeAs('recipes_resource/' . $recipeId, $filename, 'public');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $recipes = Recipe::latest()->paginate(10);
+        $authors = ['foodfusion', 'someone'];
+
+        // Only include recipes from the listed author usernames
+        $query = Recipe::query()->with(['author', 'media', 'tags'])
+            ->whereHas('author', function ($q) use ($authors) {
+                $q->whereIn('username', $authors);
+            });
+
+        // Apply filters from query string
+        if ($request->filled('cuisine')) {
+            $query->where('cuisine', $request->get('cuisine'));
+        }
+        if ($request->filled('difficulty')) {
+            $query->where('difficulty', $request->get('difficulty'));
+        }
+        if ($request->filled('tag')) {
+            $tag = $request->get('tag');
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', $tag);
+            });
+        }
+
+        // Pagination (preserve filters in links)
+        $perPage = 10;
+        $recipes = $query->orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->appends($request->only(['cuisine', 'difficulty', 'tag']));
+
+        // Return the listing view (AJAX fetch in front-end expects HTML containing #recipes-grid)
         return view('recipe.index', ['recipes' => $recipes]);
     }
     public function show($slug)

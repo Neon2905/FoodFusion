@@ -21,6 +21,15 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        $foodFusionUser = User::factory()->create([
+            'email' => 'foodfusion@example.com',
+        ]);
+
+        $foodFusionUser->profile()->create([
+            'username'=>'foodfusion',
+            'name' =>'Food Fusion'
+        ]);
+
         $this->call([
             RecipeSeeder::class,
             ResourceSeeder::class,

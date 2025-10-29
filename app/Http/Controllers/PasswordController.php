@@ -16,7 +16,7 @@ class PasswordController extends Controller
         // TODO: Review
         $validated = $request->validate([
             'current_password' => ['required'],
-            'new_password' => ['required', 'min:8', 'confirmed'],
+            'password' => ['required', 'min:8', 'confirmed'],
         ]);
 
         /** @var User $user */

@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         {{-- Brand --}}
         <div class="flex flex-col items-start gap-2">
-            <a href="/"
+            <a href="{{ route('home') }}"
                 class="flex items-center no-underline gap-0 text-display-sm drop-shadow-[0_4px_4px_rgba(0,0,0,.5)]">
                 <span class="text-primary">Food</span><span class="text-accent">Fusion</span>
             </a>
@@ -14,10 +14,9 @@
             <ul class="flex flex-wrap gap-3 md:gap-6 items-start">
                 <li><a href="/community" class="text-sm hover:underline">Community</a></li>
                 <li><a href="/recipes" class="text-sm hover:underline">Recipes</a></li>
-                <li><a href="/resources/culinary" class="text-sm hover:underline">Resources</a></li>
                 <li><a href="/about" class="text-sm hover:underline">About</a></li>
                 <li><a href="/privacy" class="text-sm hover:underline">Privacy</a></li>
-                <li><a href="/terms" class="text-sm hover:underline">Terms</a></li>
+                <li><a href="/contact" class="text-sm hover:underline">Contact</a></li>
             </ul>
         </nav>
 

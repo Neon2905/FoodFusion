@@ -49,7 +49,9 @@
                 </div>
             </div>
 
-            <x-follow :profile="$profile" />
+            @if (auth()->check() && auth()->user()->id !== $profile->user_id)
+                <x-follow :profile="$profile" />
+            @endif
         </div>
         <div class="flex items-center justify-between px-8 w-full border-b border-accent">
             {{-- Menu --}}
@@ -57,8 +59,8 @@
             @php
                 $route =
                     auth()->check() && optional(auth()->user()->profile)->id === optional($profile)->id
-                    ? 'profile.show'
-                    : 'profile.view';
+                        ? 'profile.show'
+                        : 'profile.view';
             @endphp
             <div class="flex">
                 <x-tab active="{{ $tab === 'home' }}"
