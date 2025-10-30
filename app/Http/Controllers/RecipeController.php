@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Recipe;
 use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RecipeController extends Controller
 {
@@ -45,7 +46,7 @@ class RecipeController extends Controller
 
         $recipe->ingredients()->createMany($validated['ingredients']);
         $recipe->steps()->createMany($validated['steps']);
-        $recipe->tags()->createMany($validated['tags'] ?? []); // TODO: fix this. no data found here!
+        $recipe->tags()->createMany($validated['tags'] ?? []);
         $recipe->tips()->createMany($validated['tips'] ?? []);
 
         $recipe->nutrition()->create(
@@ -59,23 +60,62 @@ class RecipeController extends Controller
                 $files = [$files];
             }
 
+            // Keep a mutable, re-indexed copy of media_meta to allow consuming matches
+            $remainingMeta = is_array($media_meta) ? array_values($media_meta) : [];
+
             foreach ($files as $index => $file) {
                 if (!$file || !$file->isValid()) {
                     continue;
                 }
 
+                // Try to find corresponding meta: prefer index match, else match by name+size
+                $meta = $remainingMeta[$index] ?? null;
+
+                if (!$meta) {
+                    $origName = $file->getClientOriginalName();
+                    $origSize = $file->getSize();
+                    $foundKey = null;
+                    foreach ($remainingMeta as $k => $m) {
+                        if ((isset($m['name']) && $m['name'] === $origName) || (isset($m['size']) && intval($m['size']) === intval($origSize))) {
+                            $meta = $m;
+                            $foundKey = $k;
+                            break;
+                        }
+                    }
+                    // consume matched meta so duplicates don't match again
+                    if ($foundKey !== null) {
+                        unset($remainingMeta[$foundKey]);
+                    }
+                } else {
+                    // consume index-matched meta
+                    unset($remainingMeta[$index]);
+                }
+
+                // store the file on the public disk; generateStoragePath will store and return the path
                 $storedPath = $this->generateStoragePath($file, $recipe->id);
 
+                // determine type from mime if not provided by meta
+                $mime = $file->getClientMimeType();
+                $type = 'image';
+                if (str_starts_with($mime, 'video/')) {
+                    $type = 'video';
+                } elseif (isset($meta['type']) && in_array($meta['type'], ['image', 'video'])) {
+                    $type = $meta['type'];
+                }
+
                 $recipe->media()->create([
-                    'url' => asset('storage/' . $storedPath),
-                    // 'caption' => $filename, TODO
-                    'type' => $media_meta[$index]['type'],
+                    'url' => '/storage/' . ltrim($storedPath, '/'),
+                    'type' => $type,
+                    'alt' => $meta['alt'] ?? null,
+                    'caption' => $meta['caption'] ?? null,
                 ]);
             }
 
-            $recipe->update([
-                'hero_url' => $recipe->media()->first()->url,
-            ]);
+            if ($first = $recipe->media()->first()) {
+                $recipe->update([
+                    'hero_url' => $first->url,
+                ]);
+            }
         }
 
         return redirect()->route('recipes.show', ['slug' => $recipe->slug])->with('success', 'Recipe created successfully!');
@@ -92,9 +132,37 @@ class RecipeController extends Controller
         return $file->storeAs('recipes_resource/' . $recipeId, $filename, 'public');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $recipes = Recipe::paginate(10);
+        $authors = ['foodfusion', 'someone'];
+
+        // Only include recipes from the listed author usernames
+        $query = Recipe::query()->with(['author', 'media', 'tags'])
+            ->whereHas('author', function ($q) use ($authors) {
+                $q->whereIn('username', $authors);
+            });
+
+        // Apply filters from query string
+        if ($request->filled('cuisine')) {
+            $query->where('cuisine', $request->get('cuisine'));
+        }
+        if ($request->filled('difficulty')) {
+            $query->where('difficulty', $request->get('difficulty'));
+        }
+        if ($request->filled('tag')) {
+            $tag = $request->get('tag');
+            $query->whereHas('tags', function ($q) use ($tag) {
+                $q->where('name', $tag);
+            });
+        }
+
+        // Pagination (preserve filters in links)
+        $perPage = 10;
+        $recipes = $query->orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->appends($request->only(['cuisine', 'difficulty', 'tag']));
+
+        // Return the listing view (AJAX fetch in front-end expects HTML containing #recipes-grid)
         return view('recipe.index', ['recipes' => $recipes]);
     }
     public function show($slug)

@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('password');
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
+            $table->integer('failed_attempts')->default('1');
             $table->rememberToken();
             $table->timestamps();
         });

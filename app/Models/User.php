@@ -81,5 +81,9 @@ class User extends Authenticatable implements MustVerifyEmail
         //         ]
         //     );
         // });
+
+        static::created(function ($user){
+
+        });
     }
 }

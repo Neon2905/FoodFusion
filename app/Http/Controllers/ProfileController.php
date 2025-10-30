@@ -10,7 +10,8 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        return view('profile.index', ['user' => $user, 'recipes' => $user->profile ? $user->profile->recipes : []]);
+        $tab = $request->query('tab', 'home');
+        return view('profile.index', ['user' => $user, 'recipes' => $user->profile ? $user->profile->recipes : [], 'tab' => $tab]);
     }
 
     public function setupForm()
@@ -22,7 +23,8 @@ class ProfileController extends Controller
     {
         $profile = Profile::where('username', $profile)->firstOrFail();
 
-        return view('profile.index', ['user' => $profile->user, 'recipes' => $profile->recipes]);
+        $tab = request()->query('tab', 'home');
+        return view('profile.index', ['user' => $profile->user, 'recipes' => $profile->recipes, 'tab' => $tab]);
     }
 
     public function setup(Request $request)

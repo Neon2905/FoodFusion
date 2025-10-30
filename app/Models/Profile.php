@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use App\Models\Media;
 
 class Profile extends Model
 {
@@ -52,5 +53,22 @@ class Profile extends Model
     public function recipes()
     {
         return $this->hasMany(Recipe::class);
+    }
+
+    public function average_rating()
+    {
+        return $this->recipes()->avg('rating');
+    }
+
+    public function videos()
+    {
+        return $this->hasManyThrough(
+            Media::class,
+            Recipe::class,
+            'profile_id',
+            'recipe_id',
+            'id',
+            'id'
+        )->where('type', 'video');
     }
 }

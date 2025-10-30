@@ -44,7 +44,6 @@ class Recipe extends Model
         parent::boot();
 
         static::creating(function ($recipe) {
-            // TODO: Optimize this
             if (empty($recipe->slug) && !empty($recipe->title)) {
                 $baseSlug = Str::slug($recipe->title);
                 $slug = $baseSlug;
@@ -53,6 +52,19 @@ class Recipe extends Model
                     $slug = $baseSlug . '-' . $i++;
                 }
                 $recipe->slug = $slug;
+            }
+        });
+
+        static::created(function ($recipe){
+            if (empty($recipe->hero_url)) {
+                $firstMedia = $recipe->media()->orderBy('id')->first();
+                if ($firstMedia) {
+                    $url = $firstMedia->url ?? $firstMedia->path ?? null;
+                    if ($url) {
+                        $recipe->hero_url = $url;
+                        $recipe->saveQuietly();
+                    }
+                }
             }
         });
     }

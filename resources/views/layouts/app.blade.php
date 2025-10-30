@@ -12,13 +12,15 @@
         <title>{{ $title }}</title>
     </head>
 
-    <body class="bg-background">
+    <body class="bg-background w-full p-0">
         <x-navbar />
         <main {{ $attributes->class(['flex w-full px-20 sm:px-10 py-7 gap-5']) }}>
             @yield('content')
         </main>
         <x-auth.login-modal />
         <x-auth.register-modal />
+
+        <x-footer />
     </body>
 
 </html>

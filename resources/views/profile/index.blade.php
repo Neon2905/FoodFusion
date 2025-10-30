@@ -2,6 +2,7 @@
 
 @php
     $profile = $user->profile ?? null;
+
     if (!isset($recipes)) {
         $recipes = collect([
             (object) [
@@ -32,19 +33,25 @@
         <div class="flex-center flex-row justify-between w-full pb-4 px-6">
             <div class="flex w-full gap-3 items-start">
                 <img src="{{ $profile->profile }}" alt="user profile" class="rounded-full size-35 border-muted">
-                <div class="flex-col gap-3 items-start">
+                <div class="flex-col gap-3 items-start w-full">
                     <h1 class="text-display-sm">{{ $profile->name }}</h1>
                     <h3 class="gap-2 text-muted">
-                        {{ '@' . $profile->username . ' • ' . $profile->followers()->count() . ' Followers' }}</h3>
-                    <div class="flex flex-row justify-between text-body-md font-bold">
+                        {{ '@' . $profile->username . ' • ' . $profile->followers()->count() . ' Followers' }}
+                    </h3>
+                    <div class="flex flex-row gap-5 text-body-md font-bold">
                         <p>{{ 'Recipes: ' . $recipes->count() }}</p>
-                        <p>{{ 'Recipes: ' . $recipes->count() }}</p>
+                        <span class="flex flex-row items-center text-body-lg gap-1">
+                            Rating:
+                            <x-rating :value="$profile->average_rating()" :size="4" />
+                        </span>
                     </div>
-                    <p class="text-body-md font-bold text-muted">{{ $profile->bio }}</p>
+                    <p class="text-body-md font-bold text-muted lg:w-1/4 w-full">{{ $profile->bio }}</p>
                 </div>
             </div>
 
-            <x-follow :profile="$profile" />
+            @if (auth()->check() && auth()->user()->id !== $profile->user_id)
+                <x-follow :profile="$profile" />
+            @endif
         </div>
         <div class="flex items-center justify-between px-8 w-full border-b border-accent">
             {{-- Menu --}}
@@ -56,12 +63,20 @@
                         : 'profile.view';
             @endphp
             <div class="flex">
-                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'home']) }}">Home</x-tab>
-                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'videos']) }}">Videos</x-tab>
-                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'recipes']) }}">Recipes</x-tab>
-                <x-tab href="{{ route($route, ['user' => $profile->username, 'tab' => 'resources']) }}">Resources</x-tab>
+                <x-tab active="{{ $tab === 'home' }}"
+                    href="{{ route($route, ['user' => $profile->username, 'tab' => 'home']) }}">Home</x-tab>
+                <x-tab active="{{ $tab === 'videos' }}"
+                    href="{{ route($route, ['user' => $profile->username, 'tab' => 'videos']) }}">Videos</x-tab>
+                <x-tab active="{{ $tab === 'recipes' }}"
+                    href="{{ route($route, ['user' => $profile->username, 'tab' => 'recipes']) }}">Recipes</x-tab>
+                <x-tab active="{{ $tab === 'resources' }}"
+                    href="{{ route($route, ['user' => $profile->username, 'tab' => 'resources']) }}">Resources</x-tab>
             </div>
             <x-css-search class="size-8 cursor-pointer" />
+        </div>
+
+        <div class="mt-6 px-6">
+            @includeIf("profile.sections.{$tab}", ['profile' => $profile, 'recipes' => $recipes ?? null])
         </div>
     </div>
 @endsection

@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\RateLimiter;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
@@ -19,11 +19,29 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt(credentials: $credentials)) {
+        // throttle key per email + ip
+        $key = Str::lower($request->input('email')) . '|' . $request->ip();
+        $maxAttempts = 3;
+        $decaySeconds = 10 * 60; // 10 minutes
+
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            $seconds = RateLimiter::availableIn($key);
             return back()->withErrors([
-                'auth_error' => 'The provided credentials do not match our records.',
+                'error' => "Too many login attempts. Please try again in {$seconds} seconds.",
             ]);
         }
+
+        if (!Auth::attempt(credentials: $credentials)) {
+            RateLimiter::hit($key, $decaySeconds);
+            $attempts = RateLimiter::attempts($key);
+            $remaining = max(0, $maxAttempts - $attempts);
+            return back()->withErrors([
+                'error' => "The provided credentials do not match our records. {$remaining} attempt(s) remaining.",
+            ]);
+        }
+
+        // successful login -> clear attempts
+        RateLimiter::clear($key);
 
         $user = User::where('email', $credentials['email'])->first();
         Auth::login($user, true);
@@ -35,11 +53,18 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8', 'confirmed'],
+            'firstname' => ['string'],
+            'lastname' => ['string']
         ]);
 
         $user = User::create([
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+        ]);
+
+        $user->profile()->create([
+            'name' => trim(($validated['firstname'] ?? '') . ' ' . ($validated['lastname'] ?? '')),
+            'username' => Str::slug(trim(($validated['firstname'] ?? 'user') . ' ' . ($validated['lastname'] ?? ''))) . $user->id,
         ]);
 
         Auth::login($user);

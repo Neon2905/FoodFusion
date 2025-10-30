@@ -1,14 +1,12 @@
-@extends('layouts.app', ['title' => 'Recipes'])
+@extends('layouts.app', ['title' => 'Community Cookbook'])
 
 @section('content')
     @php
-        // derive dropdown options from current page items as a lightweight fallback
         $items = collect(
             $recipes instanceof \Illuminate\Pagination\LengthAwarePaginator ? $recipes->items() : $recipes,
         );
         $cuisines = $items->pluck('cuisine')->filter()->unique()->values();
         $difficulties = $items->pluck('difficulty')->filter()->unique()->values();
-        // collect tag names (may lazy-load per model)
         $dietTags = $items
             ->flatMap(function ($r) {
                 return optional($r->tags)->pluck('name') ?? [];
@@ -18,16 +16,20 @@
             ->values();
     @endphp
 
-    <div class="mx-auto max-w-7xl" x-data="index()" x-init="init()" x-on:destroyed.window="destroy()">
+    <div class="max-w-6xl mx-auto" x-data="communityIndex()" x-init="init()" x-on:destroyed.window="destroy()">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h1 class="text-display-sm">Recipe Collection</h1>
-                <p class="text-muted">A curated collection of diverse recipes from around the world — filter by cuisine,
-                    dietary preference or difficulty.</p>
+                <h1 class="text-display-sm">Community Cookbook</h1>
+                <p class="text-muted">Share your favourite recipes and tips.</p>
             </div>
+            <p class="text-muted">Use filters to narrow results.</p>
         </div>
 
-        {{-- Filters --}}
+        <div class="card p-4 mb-4">
+            <p class="text-body-md">Contribute recipes, comment, and interact with other cooks. Use the <a
+                    href="{{ route('recipes.create.view') }}" class="text-primary">Create recipe</a> page to publish.</p>
+        </div>
+
         <div class="card mb-4">
             <div class="flex gap-3 items-end flex-wrap p-3">
                 <div class="flex flex-col">
@@ -72,8 +74,8 @@
             </div>
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="recipes-grid">
-                @foreach ($recipes as $recipe)
-                    <x-recipe.card :recipe="$recipe" />
+                @foreach ($recipes as $r)
+                    <x-recipe.card :recipe="$r" />
                 @endforeach
             </div>
 
@@ -90,31 +92,18 @@
 @endsection
 
 <script>
-    function index() {
+    function communityIndex() {
         return {
-            // explicitly define the selector used to find the recipes grid
             gridSelector: '#recipes-grid',
             currentPage: {{ $recipes->currentPage() }},
             lastPage: {{ $recipes->lastPage() }},
             loading: false,
             observer: null,
-
-            // initial filters (keeps server query params if present)
-            // filters: @json([
-            //     'cuisine' => request('cuisine', ''),
-            //     'tag' => request('tag', ''),
-            //     'difficulty' => request('difficulty', ''),
-            // ]),
-
             filters: {},
-
             init() {
                 const grid = document.querySelector(this.gridSelector);
                 if (!grid) return;
-
                 const sentinel = document.getElementById('scroll-sentinel');
-
-                // start observing sentinel for infinite scroll
                 this.observer = new IntersectionObserver(entries => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && !this.loading && this.currentPage < this.lastPage) {
@@ -124,24 +113,17 @@
                 }, {
                     rootMargin: '200px'
                 });
-
                 if (sentinel) this.observer.observe(sentinel);
             },
-
             async fetchPage(page = 1) {
                 this.loading = true;
-
                 try {
                     const url = new URL(window.location.href);
                     url.searchParams.set('page', page);
-
-                    // include filters in query string
                     if (this.filters.cuisine) url.searchParams.set('cuisine', this.filters.cuisine);
                     else url.searchParams.delete('cuisine');
-
                     if (this.filters.tag) url.searchParams.set('tag', this.filters.tag);
                     else url.searchParams.delete('tag');
-
                     if (this.filters.difficulty) url.searchParams.set('difficulty', this.filters.difficulty);
                     else url.searchParams.delete('difficulty');
 
@@ -156,23 +138,18 @@
                     const text = await res.text();
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(text, 'text/html');
-
                     const newGrid = doc.querySelector(this.gridSelector) || doc.querySelectorAll('.card');
                     const grid = document.querySelector(this.gridSelector);
 
                     if (newGrid) {
-                        // if newGrid is an element with children
                         if (newGrid.children) {
                             Array.from(newGrid.children).forEach(child => grid.appendChild(child));
                         } else {
-                            // fallback: NodeList of cards
                             Array.from(newGrid).forEach(c => grid.appendChild(c));
                         }
                     }
 
                     this.currentPage = page;
-
-                    // stop observing when last page reached
                     if (this.currentPage >= this.lastPage && this.observer) {
                         this.observer.disconnect();
                         const sentinel = document.getElementById('scroll-sentinel');
@@ -184,16 +161,12 @@
                     this.loading = false;
                 }
             },
-
             applyFilters() {
-                // Reset grid and pagination, then load first page with filters
                 const grid = document.querySelector(this.gridSelector);
                 if (!grid) return;
-                grid.innerHTML = ''; // clear current items
+                grid.innerHTML = '';
                 this.currentPage = 0;
-                // fetch first page (server will respect query params)
                 this.fetchPage(1);
-                // update browser url (non-destructive)
                 const url = new URL(window.location.href);
                 if (this.filters.cuisine) url.searchParams.set('cuisine', this.filters.cuisine);
                 else url.searchParams.delete('cuisine');
@@ -201,23 +174,18 @@
                 else url.searchParams.delete('tag');
                 if (this.filters.difficulty) url.searchParams.set('difficulty', this.filters.difficulty);
                 else url.searchParams.delete('difficulty');
-                url.searchParams.set('page', 1);
                 history.replaceState({}, '', url.toString());
             },
-
             clearFilters() {
-                this.filters.cuisine = '';
-                this.filters.tag = '';
-                this.filters.difficulty = '';
+                this.filters = {};
                 this.applyFilters();
             },
-
             destroy() {
                 if (this.observer) {
                     this.observer.disconnect();
                     this.observer = null;
                 }
             }
-        }
+        };
     }
 </script>
