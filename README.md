@@ -1,61 +1,143 @@
-# Laravel
+# FoodFusion
 
-[![Laravel Logo](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)](https://laravel.com)
+FoodFusion is a Laravel-based community for home cooks and creators — publish and browse recipes, learn cooking techniques, download recipe cards, and watch instructional videos.
 
-[![Build Status](https://github.com/laravel/framework/workflows/tests/badge.svg)](https://github.com/laravel/framework/actions)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/framework)
-[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/framework)
+---
 
-## About Laravel
+## Quick links
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Routes: [routes/web.php](routes/web.php)  
+- Culinary resources page: [resources/views/resource/culinary.blade.php](resources/views/resource/culinary.blade.php)  
+- Import demo resources command: [app/Console/Commands/ImportDemoResources.php](app/Console/Commands/ImportDemoResources.php)  
+- Resource model: [`App\Models\Resource`](app/Models/Resource.php)  
+- Controller (loads resources): [`App\Http\Controllers\PageController::culinaryResources`](app/Http/Controllers/PageController.php)  
+- Deployment script: [scripts/deploy.sh](scripts/deploy.sh)  
+- Security policy: [SECURITY.md](SECURITY.md)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requirements
 
-## Learning Laravel
+- PHP ^8.2
+- Composer
+- Node.js + npm (or pnpm)
+- MySQL (recommended) or SQLite for local development
+- Optional: Redis (caching, queues)
+- Optional: S3-compatible storage for media in production
+- Recommended OS: Linux/macOS (works on Windows with WSL)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Key composer packages (see [composer.json](composer.json)):
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- laravel/framework
+- laravel/socialite
+- blade-ui-kit/blade-heroicons
+- brunocfalcao/blade-feather-icons
+- davidhsianturi/blade-bootstrap-icons
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Key npm packages and build (see [package.json](package.json)):
 
-## Laravel Sponsors
+- Vite-based frontend: run `npm install` and `npm run build` / `npm run dev`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Container/infra:
 
-### Premium Partners
+- Dockerfile present at [Dockerfile](Dockerfile)
+- Deployment helper: [scripts/deploy.sh](scripts/deploy.sh)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Security:
 
-## Contributing
+- Follow [SECURITY.md](SECURITY.md)
+- Ensure `APP_KEY` is set in `.env` and `APP_DEBUG=false` in production
+- Run dependency audits: `composer audit` and `npm audit`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Setup (local development)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Clone repo and enter directory
 
-## Security Vulnerabilities
+   ```sh
+   git clone <repo> && cd FoodFusion
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. Copy environment template and edit
 
-## License
+   ```sh
+   cp .env.example .env
+   # edit .env: DB_*, APP_KEY (auto-generated below), mail settings, storage disk
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. Install PHP deps
+
+   ```sh
+   composer install
+   ```
+
+4. Install JS deps and build assets
+
+   ```sh
+   npm install
+   # development
+   npm run dev
+   # or production build
+   npm run build
+   ```
+
+5. Generate app key
+
+   ```sh
+   php artisan key:generate
+   ```
+
+6. Create database and run migrations
+
+   ```sh
+   php artisan migrate
+   # optionally seed (if seeders available)
+   php artisan db:seed
+   ```
+
+7. Link storage for public assets
+
+   ```sh
+   php artisan storage:link
+   ```
+
+8. Serve locally
+
+    ```sh
+    php artisan serve
+    ```
+
+---
+
+## Production / Deploy
+
+- Build assets: `npm run build`
+- Composer install with optimized autoloader: `composer install --no-dev --optimize-autoloader`
+- Run migrations: `php artisan migrate --force`
+- Cache config/routes/views: `php artisan config:cache && php artisan route:cache && php artisan view:cache`
+- Use the provided deployment helper inside your container: [scripts/deploy.sh](scripts/deploy.sh)
+- Ensure HTTPS termination, secure cookies, and `APP_DEBUG=false`.
+
+---
+
+## Data model notes
+
+- Read-only resources (Culinary / Educational) are represented by `App\Models\Resource` ([app/Models/Resource.php](app/Models/Resource.php)).
+- Pages that list resources are wired in `PageController` — see [`App\Http\Controllers\PageController::culinaryResources`](app/Http/Controllers/PageController.php).
+- Routes: resource listing and detail routes are declared in [routes/web.php](routes/web.php).
+
+---
+
+## Admin / Content
+
+- This app currently expects resource rows to be created by an admin or via the import command (`php artisan import:demo-resources`). Audience users view/download only.
+- To add/manage resources manually, create admin-only CRUD or add records via tinker/seeders.
+
+---
+
+If you want, I can:
+
+- Add a `Resource` seeder and factory.
+- Add an admin-only controller + simple Blade form for uploading resources.
+- Provide a small checklist for hardening production settings (env, HTTPS, backups).
