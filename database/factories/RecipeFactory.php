@@ -158,15 +158,28 @@ class RecipeFactory extends Factory
             }
             Ingredient::insert($ings);
 
+            fake()->addProvider(new ImageFakerProvider($this->faker));
             // Create Media Collection (use faker imageUrl)
             $mediaCount = $this->faker->numberBetween(5, 15);
             for ($j = 0; $j < $mediaCount; $j++) {
                 Media::create([
                     'recipe_id' => $recipe->id,
-                    'url' => $this->faker->imageUrl(800, 600, 'food'),
+                    'url' => fake()->imageUrl(800, 600, 'food'),
                     'type' => 'image',
                     'alt' => $recipe->title . ' extra ' . ($j + 1),
                 ]);
+            }
+            
+            // Add hero image
+            if (empty($recipe->hero_url)) {
+                $firstMedia = $recipe->media()->orderBy('id')->first();
+                if ($firstMedia) {
+                    $url = $firstMedia->url ?? $firstMedia->path ?? null;
+                    if ($url) {
+                        $recipe->hero_url = $url;
+                        $recipe->saveQuietly();
+                    }
+                }
             }
 
             // Nutrition

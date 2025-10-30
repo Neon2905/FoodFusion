@@ -88,11 +88,11 @@
                 <div class="bg-white rounded-xl shadow p-4 space-y-3">
                     <h2 class="font-bold text-lg">Featured Recipes & Trends</h2>
                     <template x-for="n in news" :key="n.id">
-                        <a :href="n.slug ? ('/recipe/' + n.slug) : '/recipes'"
+                        <a :href="n.slug ? ({ '/recipe/' + n.slug }) : '/recipes'"
                             class="block border rounded p-3 flex items-start gap-3 hover:shadow-sm">
                             <div class="w-20 h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                                 <!-- placeholder square; if you have thumbnails in news, replace src -->
-                                <img x-show="n.img" :src="n.hero_url" class="w-full h-full object-cover"
+                                <img src="n.hero_url" class="w-full h-full object-cover"
                                     alt="" />
                             </div>
                             <div>

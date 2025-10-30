@@ -109,6 +109,17 @@ class RecipeController extends Controller
                     'alt' => $meta['alt'] ?? null,
                     'caption' => $meta['caption'] ?? null,
                 ]);
+
+                if (empty($recipe->hero_url)) {
+                    $firstMedia = $recipe->media()->orderBy('id')->first();
+                    if ($firstMedia) {
+                        $url = $firstMedia->url ?? $firstMedia->path ?? null;
+                        if ($url) {
+                            $recipe->hero_url = $url;
+                            $recipe->saveQuietly();
+                        }
+                    }
+                }
             }
 
             if ($first = $recipe->media()->first()) {

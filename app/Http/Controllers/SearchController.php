@@ -45,7 +45,7 @@ class SearchController extends Controller
             $items = $query->orderBy('created_at', 'desc')
                 ->skip(($page - 1) * $per)
                 ->take($per)
-                ->get(['id', 'title', 'slug', 'description', 'hero_url', 'meal_type', 'rating']);
+                ->get(['id', 'title', 'slug', 'description', 'servings', 'hero_url', 'meal_type', 'rating']);
 
             return response()->json([
                 'meta' => ['total' => $total, 'page' => $page, 'per' => $per],
