@@ -45,7 +45,7 @@
                 <div class="grid grid-cols-3 gap-4" x-show="results.length" x-cloak>
                     <template x-for="r in results" :key="r.id">
                         <a :href="'/recipe/' + r.slug" class="card no-underline hover:shadow-lg transition">
-                            <img src="r.heroUrl" alt="r.title" class="w-full h-48 object-cover rounded">
+                            <img :src="r.heroUrl" alt="r.title" class="w-full h-48 object-cover rounded">
                             <div class="mt-3">
                                 <h3 class="font-semibold text-lg" x-text="r.title"></h3>
                                 <p class="text-muted" x-text="`${r.meal_type} • ${r.servings || 'unknown'} servings`"></p>

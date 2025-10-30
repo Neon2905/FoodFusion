@@ -122,6 +122,7 @@ class PageController extends Controller
             return [
                 'id' => $r->id,
                 'title' => $r->title,
+                'slug' => $r->slug,
                 'excerpt' => Str::limit($r->description ?? '', 120),
                 'hero_url' => $r->hero_url ?? optional($r->media->first())->url ?? null,
             ];
